@@ -1,4 +1,4 @@
-# Naylah for Universal Windows Plataform
+# Naylah Toolkit for Universal Windows Plataform
 Naylah UWP it's a SDK for Universal Windows Plataform. 
 
 AppVeyor Build for Universal Windows Plataform it's not supported (yet).
