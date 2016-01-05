@@ -10,6 +10,10 @@
         <ResourceDictionary
             Source="ms-appx:///Naylah.Toolkit.UWP/Controls/SideBar/SideBar.xaml" />
 
+        <ResourceDictionary
+            Source="ms-appx:///Naylah.Toolkit.UWP/Controls/ImageCropper/ImageCropper.xaml" />
+        
+
     </ResourceDictionary.MergedDictionaries>
 
 

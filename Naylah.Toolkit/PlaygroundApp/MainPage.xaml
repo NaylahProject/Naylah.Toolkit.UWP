@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     
-    xmlns:naylahsidebar="using:Naylah.Toolkit.UWP.Controls.CircularSlider"
+    xmlns:naylahImageCropper="using:Naylah.Toolkit.UWP.Controls.ImageCropper"
     
     >
 
@@ -15,25 +15,11 @@
         x:Name="gdPageContent"
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-        <naylahsidebar:CircularSliderControl 
-                        
-                        x:Name="clc"
-                         Grid.Row="0" 
-                         Background="Transparent"
-                         Margin="-20,0,0,0"
-                         Width="400"
-                         Height="370"
-                         OuterRingRadius="120"
-                         InnerRingRadius="80"
-                         OuterRingMaxValue ="59"
-                         InnerRingMaxValue ="12"
-                         StripWidth="40"
-                         OuterRingColor="BlueViolet"
-                         InnerRingColor="DarkSlateBlue"                            
-                         GripSize="50"
-                         GripColor="White"
-                         GripColorPressed="LightGray"
-                         />
+        <naylahImageCropper:ImageCropper
+            x:Name="imageCropper"
+            >
+            
+        </naylahImageCropper:ImageCropper>
         
     </Grid>
     

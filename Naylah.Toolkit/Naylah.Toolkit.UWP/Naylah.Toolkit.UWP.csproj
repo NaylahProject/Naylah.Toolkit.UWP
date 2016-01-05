@@ -112,6 +112,7 @@
     <Compile Include="Controls\CircularSlider\IMathHelper.cs" />
     <Compile Include="Controls\CircularSlider\PadMinutesConverter.cs" />
     <Compile Include="Controls\CircularSlider\PercentageConverter.cs" />
+    <Compile Include="Controls\ImageCropper\ImageCropper.cs" />
     <Compile Include="Controls\SideBar\SideBar.cs" />
     <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Converter\NullToVisibilityConverter.cs" />
     <Compile Include="Converter\RelativeDistanceConverter.cs" />
     <Compile Include="Converter\StringEmptyOrNullVisibilityConverter.cs" />
+    <Compile Include="Extensions\ImageCropperExtensions.cs" />
     <Compile Include="Helpers\ApplicationHelper.cs" />
     <Compile Include="Helpers\DataHelper.cs" />
     <Compile Include="Helpers\LanguageResources.cs" />
@@ -129,6 +131,11 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="Controls\ImageCropper\ImageCropper.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
     <Page Include="Controls\SideBar\SideBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
