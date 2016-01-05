@@ -1,0 +1,105 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controlsSideBar="using:Naylah.Toolkit.UWP.Controls.SideBar"
+    
+    >
+
+    <Style TargetType="controlsSideBar:SideBar">
+
+        <Setter Property="Canvas.ZIndex" Value="1"></Setter>
+        <Setter Property="VerticalAlignment" Value="Stretch"></Setter>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="controlsSideBar:SideBar">
+
+                    <Grid
+                        x:Name="RootGrid"
+                        
+                        >
+
+                        <Grid
+                            x:Name="gdExtensorPlaceHolder"
+                            Canvas.ZIndex="10"
+                            Width="{TemplateBinding SideBarExtensorAreaWidth}"
+                            HorizontalAlignment="Left"
+                            ManipulationMode="All"
+                            Background="Transparent"
+                            >
+
+                        </Grid>
+
+                        <Canvas 
+                            Name="SideBarCanvas"
+                            VerticalAlignment="Stretch"
+                            Canvas.ZIndex="20"
+                            >
+                            <Canvas.Resources>
+                                <Storyboard x:Name="MoveAnimation">
+                                    <DoubleAnimation Duration="0:0:0.2" To="0" Storyboard.TargetProperty="(Canvas.Left)" Storyboard.TargetName="SideBarGrid"/>
+                                </Storyboard>
+                            </Canvas.Resources>
+
+
+                            <Grid 
+                                Name="SideBarGrid" 
+                                Background="{TemplateBinding SideBarBackground}"
+            
+                                Width="{TemplateBinding SideBarWidth}" 
+                                Height="{TemplateBinding Height}"
+            
+                                VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch"
+            
+                                ManipulationMode="All"
+            
+                                >
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                    <ColumnDefinition Width="auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid>
+
+                                </Grid>
+
+                                <Grid 
+                                    Grid.Column="0"
+                                    >
+
+                                    <ContentPresenter 
+                                        x:Name="PART_SideBarContent"
+                                        Content="{TemplateBinding SideBarContent}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        >
+
+                                    </ContentPresenter>
+
+                                </Grid>
+
+                                <Grid
+                                    Grid.Column="1"
+                                    Width="{TemplateBinding SideBarIndicatorWidth}"
+                                    Background="{TemplateBinding SideBarIndicatorBackground}"
+                                    >
+
+                                </Grid>
+
+                            </Grid>
+
+
+                        </Canvas>
+
+
+                    </Grid>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+
+</ResourceDictionary>
