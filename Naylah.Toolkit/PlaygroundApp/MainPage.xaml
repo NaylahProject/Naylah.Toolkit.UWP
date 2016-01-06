@@ -15,7 +15,8 @@
 
         <ImageChooser:ImageChooser
             x:Name="imageCropper"
-            AspectRatio="ar16x9">
+            AspectRatio="ar16x9"
+            >
         </ImageChooser:ImageChooser>
     </Grid>
 </Page>

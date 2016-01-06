@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Windows.Foundation;
 using Windows.Graphics.Imaging;
 using Windows.Media.Capture;
@@ -109,6 +110,8 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
                 _isValidAspectRatio = value;
             }
         }
+
+        public Action<StorageFile> SelectionCallback { get; set; }
 
         public static string GetPropertyName<T>(Expression<Func<T>> propertyExpression)
         {
@@ -422,9 +425,18 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
 
                     await LoadPreviewFromStorageFile(CroppedImageStorageFile);
                 }
+
+                if (ImagePreviewPhase)
+                {
+                    if (SelectionCallback != null)
+                    {
+                        SelectionCallback(CroppedImageStorageFile);
+                    }
+                }
             }
             catch (Exception)
             {
+                
             }
             finally
             {
