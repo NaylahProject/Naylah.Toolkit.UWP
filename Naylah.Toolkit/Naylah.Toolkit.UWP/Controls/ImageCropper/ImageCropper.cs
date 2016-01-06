@@ -24,48 +24,57 @@ namespace Naylah.Toolkit.UWP.Controls.ImageCropper
         private const string CanvasName = "PART_Canvas";
         private const string ImageName = "PART_Image";
 
+        private Shape _bottomLeftDragControl;
+
+        private Line _bottomLine;
+
+        private Rectangle _bottomMaskingRectangle;
+
+        private Line _bottomMiddleLine;
+
+        private Shape _bottomRightDragControl;
+
         // Loaded controls
         private Canvas _canvas;
+        private double _cropBottom;
+        private double _cropBottomAtManipulationStart;
+        private double _cropLeft;
+        private double _cropLeftAtManipulationStart;
+        private double _cropRight;
+        private double _cropRightAtManipulationStart;
+        private double _cropTop;
+        private double _cropTopAtManipulationStart;
+        private DragMode _dragMode;
         private Image _image;
 
-        // Created controls
-        private Rectangle _leftMaskingRectangle;
-        private Rectangle _topMaskingRectangle;
-        private Rectangle _rightMaskingRectangle;
-        private Rectangle _bottomMaskingRectangle;
-        private Shape _topLeftDragControl;
-        private Shape _topRightDragControl;
-        private Shape _bottomLeftDragControl;
-        private Shape _bottomRightDragControl;
-        private Line _leftLine;
-        private Line _topLine;
-        private Line _rightLine;
-        private Line _bottomLine;
-        private Line _topMiddleLine;
-        private Line _bottomMiddleLine;
-        private Line _leftMiddleLine;
-        private Line _rightMiddleLine;
+        private bool _isImageLoaded;
 
         // Status
         private bool _isLoaded;
-        private DragMode _dragMode;
-        private bool _isManipulating;
-        private bool _isTemplateApplied;
-        private bool _isImageLoaded;
 
+        private bool _isManipulating;
+
+        private bool _isTemplateApplied;
+
+        private double _leftImageOffset;
+
+        private Line _leftLine;
+
+        // Created controls
+        private Rectangle _leftMaskingRectangle;
+        private Line _leftMiddleLine;
+        private Line _rightLine;
+        private Rectangle _rightMaskingRectangle;
+        private Line _rightMiddleLine;
         // Calculated locations and values
         private double _scalingFactor;
-        private double _leftImageOffset;
-        private double _topImageOffset;
-        private double _cropLeftAtManipulationStart;
-        private double _cropTopAtManipulationStart;
-        private double _cropRightAtManipulationStart;
-        private double _cropBottomAtManipulationStart;
-        private double _cropLeft;
-        private double _cropTop;
-        private double _cropRight;
-        private double _cropBottom;
 
+        private double _topImageOffset;
+        private Shape _topLeftDragControl;
+        private Line _topLine;
+        private Rectangle _topMaskingRectangle;
+        private Line _topMiddleLine;
+        private Shape _topRightDragControl;
         #region DragMode
         private enum DragMode
         {
@@ -504,6 +513,430 @@ namespace Naylah.Toolkit.UWP.Controls.ImageCropper
             this.Unloaded += OnUnloaded;
         }
 
+        public void DoFullLayout()
+        {
+            if (!_isTemplateApplied)
+            {
+                return;
+            }
+
+            var bi = _image.Source as BitmapImage;
+            if (bi == null)
+            {
+                return;
+            }
+
+            // Create UI controls
+            MaybeCreateMaskingRectangle(ref _leftMaskingRectangle);
+            MaybeCreateMaskingRectangle(ref _topMaskingRectangle);
+            MaybeCreateMaskingRectangle(ref _rightMaskingRectangle);
+            MaybeCreateMaskingRectangle(ref _bottomMaskingRectangle);
+            MaybeCreateDragControl(ref _topLeftDragControl);
+            MaybeCreateDragControl(ref _topRightDragControl);
+            MaybeCreateDragControl(ref _bottomLeftDragControl);
+            MaybeCreateDragControl(ref _bottomRightDragControl);
+            MaybeCreateLine(ref _leftLine, OutsideLineThickness);
+            MaybeCreateLine(ref _topLine, OutsideLineThickness);
+            MaybeCreateLine(ref _rightLine, OutsideLineThickness);
+            MaybeCreateLine(ref _bottomLine, OutsideLineThickness);
+            MaybeCreateLine(ref _leftMiddleLine, InsideLineThickness);
+            MaybeCreateLine(ref _topMiddleLine, InsideLineThickness);
+            MaybeCreateLine(ref _rightMiddleLine, InsideLineThickness);
+            MaybeCreateLine(ref _bottomMiddleLine, InsideLineThickness);
+
+            double scalingX = (_canvas.ActualWidth - DragControlSize) / bi.PixelWidth;
+            double scalingY = (_canvas.ActualHeight - DragControlSize) / bi.PixelHeight;
+
+            _scalingFactor = Math.Min(scalingX, scalingY);
+
+            // Calculate desired dimensions and necessary image offset
+            double desiredWidth = Math.Floor(bi.PixelWidth * _scalingFactor);
+            double desiredHeight = Math.Floor(bi.PixelHeight * _scalingFactor);
+            _leftImageOffset = (_canvas.ActualWidth - desiredWidth) / 2;
+            _topImageOffset = (_canvas.ActualHeight - desiredHeight) / 2;
+
+            // Set public values
+            OriginalWidth = (int)bi.PixelWidth;
+            OriginalHeight = (int)bi.PixelHeight;
+
+            // Move and size image
+            SetCanvasXYWithOffset(_image, 0, 0);
+            SetWidthHeight(_image, desiredWidth, desiredHeight);
+
+            // Set initial crop amounts
+            SetCropForDesiredAspectRatio();
+            SetCropProperties();
+
+            // Size the lines
+            SetWidthHeight(_leftLine, _canvas.ActualWidth, _canvas.ActualHeight);
+            SetWidthHeight(_topLine, _canvas.ActualWidth, _canvas.ActualHeight);
+            SetWidthHeight(_rightLine, _canvas.ActualWidth, _canvas.ActualHeight);
+            SetWidthHeight(_bottomLine, _canvas.ActualWidth, _canvas.ActualHeight);
+            SetWidthHeight(_leftMiddleLine, _canvas.ActualWidth, _canvas.ActualHeight);
+            SetWidthHeight(_topMiddleLine, _canvas.ActualWidth, _canvas.ActualHeight);
+            SetWidthHeight(_rightMiddleLine, _canvas.ActualWidth, _canvas.ActualHeight);
+            SetWidthHeight(_bottomMiddleLine, _canvas.ActualWidth, _canvas.ActualHeight);
+
+            // Set the parts of the masking rectangles that remain in place
+            SetCanvasXYWithOffset(_leftMaskingRectangle, 0, 0);
+            _leftMaskingRectangle.Height = _image.Height;
+            Canvas.SetTop(_topMaskingRectangle, _topImageOffset);
+            Canvas.SetTop(_rightMaskingRectangle, _topImageOffset);
+            _rightMaskingRectangle.Height = _image.Height;
+
+            _isImageLoaded = true;
+
+            // Adjust the parts of the layout that adjust on crop changes
+            AdjustLayout();
+        }
+
+        public void Setup()
+        {
+            // Check for loaded and template succesfully applied
+            if (!_isLoaded ||
+                !_isTemplateApplied)
+            {
+                return;
+            }
+
+            _image.Source = ImageSource;
+            var bi = _image.Source as BitmapImage;
+            if (bi != null)
+            {
+                bi.ImageOpened += (sender, e) =>
+                {
+                    DoFullLayout();
+                    if (this.ImageOpened != null)
+                    {
+                        this.ImageOpened(this, e);
+                    }
+                };
+            }
+        }
+
+        protected override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            _canvas = GetTemplateChild<Canvas>(CanvasName);
+            _image = GetTemplateChild<Image>(ImageName);
+
+            // Add manipulation event handlers
+            _canvas.ManipulationMode =
+                ManipulationModes.Scale | ManipulationModes.ScaleInertia |
+                ManipulationModes.TranslateX | ManipulationModes.TranslateY | ManipulationModes.TranslateInertia;
+            _canvas.ManipulationStarting += OnManipulationStarting;
+            _canvas.ManipulationStarted += OnManipulationStarted;
+            _canvas.ManipulationDelta += OnManipulationDelta;
+            _canvas.ManipulationCompleted += OnManipulationCompleted;
+            _canvas.ManipulationInertiaStarting += OnManipulationInertiaStarting;
+
+            // CAUTION: this needs to not happen in design mode, as it causes a problem there
+            // Window.Current.CoreWindow.PointerWheelChanged += OnPointerWheelChanged;
+
+            FrameworkElementExtensions.SetCursor(this, new CoreCursor(CoreCursorType.Arrow, 0));
+            _canvas.PointerMoved += OnPointerMoved;
+
+            _cropLeft = _cropRight = _cropTop = _cropBottom = 50;
+
+            // Set image to a zero size until it's properly loaded
+            // This handily avoids some crashes, and some visual issues
+            SetWidthHeight(_image, 0, 0);
+
+            _isTemplateApplied = true;
+
+            Setup();
+        }
+
+        private static void OnDesiredAspectRatioChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ImageCropper crop = d as ImageCropper;
+            if (crop != null)
+            {
+                crop.SetCropForDesiredAspectRatio();
+            }
+        }
+
+        private static void OnLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ImageCropper crop = d as ImageCropper;
+            if (crop != null)
+            {
+                crop.DoFullLayout();
+            }
+        }
+
+        private void AdjustLayout()
+        {
+            if (!_isImageLoaded)
+            {
+                return;
+            }
+
+            double halfDragControl = DragControlSize / 2;
+
+            // Move drag controls
+            SetCanvasXYWithOffset(_topLeftDragControl, _cropLeft - halfDragControl, _cropTop - halfDragControl);
+            SetCanvasXYWithOffset(_topRightDragControl, _cropRight - halfDragControl, _cropTop - halfDragControl);
+            SetCanvasXYWithOffset(_bottomLeftDragControl, _cropLeft - halfDragControl, _cropBottom - halfDragControl);
+            SetCanvasXYWithOffset(_bottomRightDragControl, _cropRight - halfDragControl, _cropBottom - halfDragControl);
+
+            // Move outside lines
+            SetPositionWithOffset(
+                _topLine,
+                _cropLeft + halfDragControl, _cropTop,
+                _cropRight - halfDragControl, Double.NaN);
+            SetPositionWithOffset(
+                _leftLine,
+                _cropLeft, _cropTop + halfDragControl,
+                Double.NaN, _cropBottom - halfDragControl);
+            SetPositionWithOffset(
+                _bottomLine,
+                _cropLeft + halfDragControl, _cropBottom,
+                _cropRight - halfDragControl, Double.NaN);
+            SetPositionWithOffset(
+                _rightLine,
+                _cropRight, _cropTop + halfDragControl,
+                Double.NaN, _cropBottom - halfDragControl);
+
+            // Move inside lines
+            SetPositionWithOffset(
+                _topMiddleLine,
+                _cropLeft, _cropTop + (_cropBottom - _cropTop) / 3,
+                _cropRight, Double.NaN);
+            SetPositionWithOffset(
+                _leftMiddleLine,
+                _cropLeft + (_cropRight - _cropLeft) / 3, _cropTop,
+                Double.NaN, _cropBottom);
+            SetPositionWithOffset(
+                _bottomMiddleLine,
+                _cropLeft, _cropBottom - (_cropBottom - _cropTop) / 3,
+                _cropRight, Double.NaN);
+            SetPositionWithOffset(
+                _rightMiddleLine,
+                _cropRight - (_cropRight - _cropLeft) / 3, _cropTop,
+                Double.NaN, _cropBottom);
+
+            // Adjust the masking rectangles
+            _leftMaskingRectangle.Width = _cropLeft;
+            Canvas.SetLeft(_topMaskingRectangle, _cropLeft + _leftImageOffset);
+            SetWidthHeight(_topMaskingRectangle, _cropRight - _cropLeft, _cropTop);
+            _rightMaskingRectangle.Width = _image.Width - _cropRight;
+            Canvas.SetLeft(_rightMaskingRectangle, _cropRight + _leftImageOffset);
+            SetCanvasXYWithOffset(_bottomMaskingRectangle, _cropLeft, _cropBottom);
+            SetWidthHeight(_bottomMaskingRectangle, _cropRight - _cropLeft, _image.Height - _cropBottom);
+        }
+
+        private DragMode CalculateDragMode(Point point)
+        {
+            DragMode mode;
+
+            var _topLeftTransform = this.TransformToVisual(_topLeftDragControl);
+            var _bottomRightTransform = this.TransformToVisual(_bottomRightDragControl);
+            double dragControlSize = _topLeftDragControl.ActualWidth;
+            var pointInTopLeft = _topLeftTransform.TransformPoint(point);
+            var pointInBottomRight = _bottomRightTransform.TransformPoint(point);
+
+            // Check for outside
+            if (pointInTopLeft.X < 0 || pointInBottomRight.X > dragControlSize
+                || pointInTopLeft.Y < 0 || pointInBottomRight.Y > dragControlSize)
+            {
+                mode = DragMode.None;
+            }
+
+            // Check for top possibilities
+            else if (pointInTopLeft.Y <= dragControlSize)
+            {
+                if (pointInTopLeft.X <= dragControlSize)
+                {
+                    mode = DragMode.TopLeft;
+                }
+                else
+                {
+                    mode = pointInBottomRight.X < 0 ? DragMode.Top : DragMode.TopRight;
+                }
+            }
+
+            // Check for bottom possibilities
+            else if (pointInBottomRight.Y >= 0)
+            {
+                if (pointInTopLeft.X <= dragControlSize)
+                {
+                    mode = DragMode.BottomLeft;
+                }
+                else
+                {
+                    mode = pointInBottomRight.X < 0 ? DragMode.Bottom : DragMode.BottomRight;
+                }
+            }
+
+            // Check for right
+            else if (pointInBottomRight.X >= 0)
+            {
+                mode = DragMode.Right;
+            }
+
+            // Check for left
+            else if (pointInTopLeft.X <= dragControlSize)
+            {
+                mode = DragMode.Left;
+            }
+
+            // Guess that means the middle!
+            else
+            {
+                mode = DragMode.Full;
+            }
+
+            return mode;
+        }
+
+        private T GetTemplateChild<T>(string name) where T : class
+        {
+            T item = GetTemplateChild(name) as T;
+
+            if (item == null)
+            {
+                throw new InvalidOperationException("CropControl requires an " + typeof(T) + " called " + name + " in its template.");
+            }
+
+            return item;
+        }
+
+        private Shape MaybeCreateDragControl(ref Shape dragControl)
+        {
+            if (dragControl == null)
+            {
+                dragControl = new Ellipse();
+                _canvas.Children.Add(dragControl);
+            }
+
+            SetWidthHeight(dragControl, DragControlSize, DragControlSize);
+            dragControl.Stroke = this.Foreground;
+            dragControl.StrokeThickness = DragControlStrokeThickness;
+
+            return dragControl;
+        }
+
+        private Line MaybeCreateLine(ref Line line, double thickness)
+        {
+            if (line == null)
+            {
+                line = new Line();
+                _canvas.Children.Add(line);
+            }
+
+            line.Stroke = this.Foreground;
+            line.StrokeThickness = thickness;
+
+            return line;
+        }
+
+        private Rectangle MaybeCreateMaskingRectangle(ref Rectangle rectangle)
+        {
+            if (rectangle == null)
+            {
+                rectangle = new Rectangle();
+                _canvas.Children.Add(rectangle);
+            }
+
+            //// rectangle.Fill = new SolidColorBrush(new Color { A = 0x44 });
+            rectangle.Fill = MaskingBrush;
+
+            return rectangle;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _isLoaded = true;
+            Setup();
+        }
+
+        private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (!_isImageLoaded)
+            {
+                return;
+            }
+
+            ProcessManipulationDelta(e.Cumulative, true);
+            SetCursorForPosition(e.Position);
+            e.Handled = true;
+        }
+
+        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
+        {
+            if (!_isImageLoaded)
+            {
+                return;
+            }
+
+            ProcessManipulationDelta(e.Cumulative, false);
+            e.Handled = true;
+        }
+
+        private void OnManipulationInertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
+        {
+            if (!_isImageLoaded)
+            {
+                return;
+            }
+
+            ProcessManipulationDelta(e.Cumulative, false);
+            e.Handled = true;
+        }
+
+        private void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
+        {
+            if (!_isImageLoaded)
+            {
+                return;
+            }
+
+            _dragMode = CalculateDragMode(e.Position);
+            ProcessManipulationDelta(e.Cumulative, false);
+            e.Handled = true;
+        }
+
+        private void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
+        {
+            if (!_isImageLoaded)
+            {
+                return;
+            }
+
+            _cropLeftAtManipulationStart = _cropLeft;
+            _cropTopAtManipulationStart = _cropTop;
+            _cropRightAtManipulationStart = _cropRight;
+            _cropBottomAtManipulationStart = _cropBottom;
+            e.Handled = true;
+        }
+
+        private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            if (!_isImageLoaded || _isManipulating)
+            {
+                return;
+            }
+
+            Point position = e.GetCurrentPoint(this).Position;
+            position = SetCursorForPosition(position);
+        }
+
+        private void OnPointerWheelChanged(CoreWindow sender, PointerEventArgs e)
+        {
+            Debug.WriteLine("!!!! wheel delta: " + e.CurrentPoint.Properties.MouseWheelDelta);
+            e.Handled = true;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            if (_isTemplateApplied)
+            {
+                //Window.Current.CoreWindow.PointerWheelChanged -= OnPointerWheelChanged;
+            }
+        }
+
         private void ProcessManipulationDelta(ManipulationDelta delta, bool done)
         {
             _cropLeft = _cropLeftAtManipulationStart;
@@ -814,485 +1247,10 @@ namespace Naylah.Toolkit.UWP.Controls.ImageCropper
             AdjustLayout();
         }
 
-        private void SetCropProperties()
-        {
-            CropLeft = (int)(_cropLeft / _scalingFactor);
-            CropTop = (int)(_cropTop / _scalingFactor);
-
-            // Internally, we keep _cropRight and _cropBottom as +1 beyond where the crop should be
-            // which is pretty necessary because of scaling.  We don't want to expose that back
-            // to our customers, however.
-            CropRight = CropLeft + (int)Math.Ceiling((_cropRight - _cropLeft) / _scalingFactor) - 1;
-            CropBottom = CropTop + (int)Math.Ceiling((_cropBottom - _cropTop) / _scalingFactor) - 1;
-
-            // Now, here, we need to add the one back in
-            CropWidth = CropRight - CropLeft + 1;
-            CropHeight = CropBottom - CropTop + 1;
-
-            // And compute our actual aspect ratio
-            ActualAspectRatio = (_cropRight - _cropLeft) / (_cropBottom - _cropTop);
-        }
-
-        private T GetTemplateChild<T>(string name) where T : class
-        {
-            T item = GetTemplateChild(name) as T;
-
-            if (item == null)
-            {
-                throw new InvalidOperationException("CropControl requires an " + typeof(T) + " called " + name + " in its template.");
-            }
-
-            return item;
-        }
-
-        protected override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            _canvas = GetTemplateChild<Canvas>(CanvasName);
-            _image = GetTemplateChild<Image>(ImageName);
-
-            // Add manipulation event handlers
-            _canvas.ManipulationMode =
-                ManipulationModes.Scale | ManipulationModes.ScaleInertia |
-                ManipulationModes.TranslateX | ManipulationModes.TranslateY | ManipulationModes.TranslateInertia;
-            _canvas.ManipulationStarting += OnManipulationStarting;
-            _canvas.ManipulationStarted += OnManipulationStarted;
-            _canvas.ManipulationDelta += OnManipulationDelta;
-            _canvas.ManipulationCompleted += OnManipulationCompleted;
-            _canvas.ManipulationInertiaStarting += OnManipulationInertiaStarting;
-
-            // CAUTION: this needs to not happen in design mode, as it causes a problem there
-            // Window.Current.CoreWindow.PointerWheelChanged += OnPointerWheelChanged;
-
-            FrameworkElementExtensions.SetCursor(this, new CoreCursor(CoreCursorType.Arrow, 0));
-            _canvas.PointerMoved += OnPointerMoved;
-
-            _cropLeft = _cropRight = _cropTop = _cropBottom = 50;
-
-            // Set image to a zero size until it's properly loaded
-            // This handily avoids some crashes, and some visual issues
-            SetWidthHeight(_image, 0, 0);
-
-            _isTemplateApplied = true;
-
-            Setup();
-        }
-
-        private void OnPointerWheelChanged(CoreWindow sender, PointerEventArgs e)
-        {
-            Debug.WriteLine("!!!! wheel delta: " + e.CurrentPoint.Properties.MouseWheelDelta);
-            e.Handled = true;
-        }
-
-        private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            if (!_isImageLoaded || _isManipulating)
-            {
-                return;
-            }
-
-            Point position = e.GetCurrentPoint(this).Position;
-            position = SetCursorForPosition(position);
-        }
-
-        private Point SetCursorForPosition(Point position)
-        {
-            DragMode dragMode = CalculateDragMode(position);
-
-            CoreCursorType cursorType;
-            if (dragMode == DragMode.Full)
-            {
-                cursorType = CoreCursorType.Hand;
-            }
-            else if (dragMode == DragMode.TopLeft || dragMode == DragMode.BottomRight)
-            {
-                cursorType = CoreCursorType.SizeNorthwestSoutheast;
-            }
-            else if (dragMode == DragMode.TopRight || dragMode == DragMode.BottomLeft)
-            {
-                cursorType = CoreCursorType.SizeNortheastSouthwest;
-            }
-            else if (dragMode == DragMode.Top || dragMode == DragMode.Bottom)
-            {
-                cursorType = CoreCursorType.SizeNorthSouth;
-            }
-            else if (dragMode == DragMode.Left || dragMode == DragMode.Right)
-            {
-                cursorType = CoreCursorType.SizeWestEast;
-            }
-            else
-            {
-                cursorType = CoreCursorType.Arrow;
-            }
-
-            FrameworkElementExtensions.SetCursor(this, new CoreCursor(cursorType, (uint)cursorType));
-            return position;
-        }
-
-        private DragMode CalculateDragMode(Point point)
-        {
-            DragMode mode;
-
-            var _topLeftTransform = this.TransformToVisual(_topLeftDragControl);
-            var _bottomRightTransform = this.TransformToVisual(_bottomRightDragControl);
-            double dragControlSize = _topLeftDragControl.ActualWidth;
-            var pointInTopLeft = _topLeftTransform.TransformPoint(point);
-            var pointInBottomRight = _bottomRightTransform.TransformPoint(point);
-
-            // Check for outside
-            if (pointInTopLeft.X < 0 || pointInBottomRight.X > dragControlSize
-                || pointInTopLeft.Y < 0 || pointInBottomRight.Y > dragControlSize)
-            {
-                mode = DragMode.None;
-            }
-
-            // Check for top possibilities
-            else if (pointInTopLeft.Y <= dragControlSize)
-            {
-                if (pointInTopLeft.X <= dragControlSize)
-                {
-                    mode = DragMode.TopLeft;
-                }
-                else
-                {
-                    mode = pointInBottomRight.X < 0 ? DragMode.Top : DragMode.TopRight;
-                }
-            }
-
-            // Check for bottom possibilities
-            else if (pointInBottomRight.Y >= 0)
-            {
-                if (pointInTopLeft.X <= dragControlSize)
-                {
-                    mode = DragMode.BottomLeft;
-                }
-                else
-                {
-                    mode = pointInBottomRight.X < 0 ? DragMode.Bottom : DragMode.BottomRight;
-                }
-            }
-
-            // Check for right
-            else if (pointInBottomRight.X >= 0)
-            {
-                mode = DragMode.Right;
-            }
-
-            // Check for left
-            else if (pointInTopLeft.X <= dragControlSize)
-            {
-                mode = DragMode.Left;
-            }
-
-            // Guess that means the middle!
-            else
-            {
-                mode = DragMode.Full;
-            }
-
-            return mode;
-        }
-
-        private void OnManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
-        {
-            if (!_isImageLoaded)
-            {
-                return;
-            }
-
-            _cropLeftAtManipulationStart = _cropLeft;
-            _cropTopAtManipulationStart = _cropTop;
-            _cropRightAtManipulationStart = _cropRight;
-            _cropBottomAtManipulationStart = _cropBottom;
-            e.Handled = true;
-        }
-
-        private void OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
-        {
-            if (!_isImageLoaded)
-            {
-                return;
-            }
-
-            _dragMode = CalculateDragMode(e.Position);
-            ProcessManipulationDelta(e.Cumulative, false);
-            e.Handled = true;
-        }
-
-        private void OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            if (!_isImageLoaded)
-            {
-                return;
-            }
-
-            ProcessManipulationDelta(e.Cumulative, false);
-            e.Handled = true;
-        }
-
-        private void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
-        {
-            if (!_isImageLoaded)
-            {
-                return;
-            }
-
-            ProcessManipulationDelta(e.Cumulative, true);
-            SetCursorForPosition(e.Position);
-            e.Handled = true;
-        }
-
-        private void OnManipulationInertiaStarting(object sender, ManipulationInertiaStartingRoutedEventArgs e)
-        {
-            if (!_isImageLoaded)
-            {
-                return;
-            }
-
-            ProcessManipulationDelta(e.Cumulative, false);
-            e.Handled = true;
-        }
-
-        private static void OnDesiredAspectRatioChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ImageCropper crop = d as ImageCropper;
-            if (crop != null)
-            {
-                crop.SetCropForDesiredAspectRatio();
-            }
-        }
-
-        private static void OnLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ImageCropper crop = d as ImageCropper;
-            if (crop != null)
-            {
-                crop.DoFullLayout();
-            }
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            _isLoaded = true;
-            Setup();
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            if (_isTemplateApplied)
-            {
-                //Window.Current.CoreWindow.PointerWheelChanged -= OnPointerWheelChanged;
-            }
-        }
-
-        private void SetWidthHeight(FrameworkElement element, double width, double height)
-        {
-            //To prevent xaml errors in W8.1...
-
-            if ((width >= element.MinWidth) & (width <= element.MaxWidth))
-            {
-                element.Width = width;
-            }
-
-            if ((height >= element.MinHeight) & (height <= element.MaxHeight))
-            {
-                element.Height = height;
-            }
-
-        }
-
         private void SetCanvasXYWithOffset(UIElement element, double x, double y)
         {
             Canvas.SetLeft(element, x + _leftImageOffset);
             Canvas.SetTop(element, y + _topImageOffset);
-        }
-
-        private void SetPositionWithOffset(Line line, double x1, double y1, double x2, double y2)
-        {
-            line.X1 = x1 + _leftImageOffset;
-            line.Y1 = y1 + _topImageOffset;
-
-            if (x2.IsNaN())
-            {
-                line.X2 = line.X1;
-            }
-            else
-            {
-                line.X2 = Math.Max(line.X1, x2 + _leftImageOffset);
-            }
-
-            if (y2.IsNaN())
-            {
-                line.Y2 = line.Y1;
-            }
-            else
-            {
-                line.Y2 = Math.Max(line.Y1, y2 + _topImageOffset);
-            }
-        }
-
-
-        private void AdjustLayout()
-        {
-            if (!_isImageLoaded)
-            {
-                return;
-            }
-
-            double halfDragControl = DragControlSize / 2;
-
-            // Move drag controls
-            SetCanvasXYWithOffset(_topLeftDragControl, _cropLeft - halfDragControl, _cropTop - halfDragControl);
-            SetCanvasXYWithOffset(_topRightDragControl, _cropRight - halfDragControl, _cropTop - halfDragControl);
-            SetCanvasXYWithOffset(_bottomLeftDragControl, _cropLeft - halfDragControl, _cropBottom - halfDragControl);
-            SetCanvasXYWithOffset(_bottomRightDragControl, _cropRight - halfDragControl, _cropBottom - halfDragControl);
-
-            // Move outside lines
-            SetPositionWithOffset(
-                _topLine,
-                _cropLeft + halfDragControl, _cropTop,
-                _cropRight - halfDragControl, Double.NaN);
-            SetPositionWithOffset(
-                _leftLine,
-                _cropLeft, _cropTop + halfDragControl,
-                Double.NaN, _cropBottom - halfDragControl);
-            SetPositionWithOffset(
-                _bottomLine,
-                _cropLeft + halfDragControl, _cropBottom,
-                _cropRight - halfDragControl, Double.NaN);
-            SetPositionWithOffset(
-                _rightLine,
-                _cropRight, _cropTop + halfDragControl,
-                Double.NaN, _cropBottom - halfDragControl);
-
-            // Move inside lines
-            SetPositionWithOffset(
-                _topMiddleLine,
-                _cropLeft, _cropTop + (_cropBottom - _cropTop) / 3,
-                _cropRight, Double.NaN);
-            SetPositionWithOffset(
-                _leftMiddleLine,
-                _cropLeft + (_cropRight - _cropLeft) / 3, _cropTop,
-                Double.NaN, _cropBottom);
-            SetPositionWithOffset(
-                _bottomMiddleLine,
-                _cropLeft, _cropBottom - (_cropBottom - _cropTop) / 3,
-                _cropRight, Double.NaN);
-            SetPositionWithOffset(
-                _rightMiddleLine,
-                _cropRight - (_cropRight - _cropLeft) / 3, _cropTop,
-                Double.NaN, _cropBottom);
-
-            // Adjust the masking rectangles
-            _leftMaskingRectangle.Width = _cropLeft;
-            Canvas.SetLeft(_topMaskingRectangle, _cropLeft + _leftImageOffset);
-            SetWidthHeight(_topMaskingRectangle, _cropRight - _cropLeft, _cropTop);
-            _rightMaskingRectangle.Width = _image.Width - _cropRight;
-            Canvas.SetLeft(_rightMaskingRectangle, _cropRight + _leftImageOffset);
-            SetCanvasXYWithOffset(_bottomMaskingRectangle, _cropLeft, _cropBottom);
-            SetWidthHeight(_bottomMaskingRectangle, _cropRight - _cropLeft, _image.Height - _cropBottom);
-        }
-
-        public void Setup()
-        {
-            // Check for loaded and template succesfully applied
-            if (!_isLoaded ||
-                !_isTemplateApplied)
-            {
-                return;
-            }
-
-            _image.Source = ImageSource;
-            var bi = _image.Source as BitmapImage;
-            if (bi != null)
-            {
-                bi.ImageOpened += (sender, e) =>
-                {
-                    DoFullLayout();
-                    if (this.ImageOpened != null)
-                    {
-                        this.ImageOpened(this, e);
-                    }
-                };
-            }
-        }
-
-        private void DoFullLayout()
-        {
-            if (!_isTemplateApplied)
-            {
-                return;
-            }
-
-            var bi = _image.Source as BitmapImage;
-            if (bi == null)
-            {
-                return;
-            }
-
-            // Create UI controls
-            MaybeCreateMaskingRectangle(ref _leftMaskingRectangle);
-            MaybeCreateMaskingRectangle(ref _topMaskingRectangle);
-            MaybeCreateMaskingRectangle(ref _rightMaskingRectangle);
-            MaybeCreateMaskingRectangle(ref _bottomMaskingRectangle);
-            MaybeCreateDragControl(ref _topLeftDragControl);
-            MaybeCreateDragControl(ref _topRightDragControl);
-            MaybeCreateDragControl(ref _bottomLeftDragControl);
-            MaybeCreateDragControl(ref _bottomRightDragControl);
-            MaybeCreateLine(ref _leftLine, OutsideLineThickness);
-            MaybeCreateLine(ref _topLine, OutsideLineThickness);
-            MaybeCreateLine(ref _rightLine, OutsideLineThickness);
-            MaybeCreateLine(ref _bottomLine, OutsideLineThickness);
-            MaybeCreateLine(ref _leftMiddleLine, InsideLineThickness);
-            MaybeCreateLine(ref _topMiddleLine, InsideLineThickness);
-            MaybeCreateLine(ref _rightMiddleLine, InsideLineThickness);
-            MaybeCreateLine(ref _bottomMiddleLine, InsideLineThickness);
-
-            double scalingX = (_canvas.ActualWidth - DragControlSize) / bi.PixelWidth;
-            double scalingY = (_canvas.ActualHeight - DragControlSize) / bi.PixelHeight;
-
-            _scalingFactor = Math.Min(scalingX, scalingY);
-
-            // Calculate desired dimensions and necessary image offset
-            double desiredWidth = Math.Floor(bi.PixelWidth * _scalingFactor);
-            double desiredHeight = Math.Floor(bi.PixelHeight * _scalingFactor);
-            _leftImageOffset = (_canvas.ActualWidth - desiredWidth) / 2;
-            _topImageOffset = (_canvas.ActualHeight - desiredHeight) / 2;
-
-            // Set public values
-            OriginalWidth = (int)bi.PixelWidth;
-            OriginalHeight = (int)bi.PixelHeight;
-
-            // Move and size image
-            SetCanvasXYWithOffset(_image, 0, 0);
-            SetWidthHeight(_image, desiredWidth, desiredHeight);
-
-            // Set initial crop amounts
-            SetCropForDesiredAspectRatio();
-            SetCropProperties();
-
-            // Size the lines
-            SetWidthHeight(_leftLine, _canvas.ActualWidth, _canvas.ActualHeight);
-            SetWidthHeight(_topLine, _canvas.ActualWidth, _canvas.ActualHeight);
-            SetWidthHeight(_rightLine, _canvas.ActualWidth, _canvas.ActualHeight);
-            SetWidthHeight(_bottomLine, _canvas.ActualWidth, _canvas.ActualHeight);
-            SetWidthHeight(_leftMiddleLine, _canvas.ActualWidth, _canvas.ActualHeight);
-            SetWidthHeight(_topMiddleLine, _canvas.ActualWidth, _canvas.ActualHeight);
-            SetWidthHeight(_rightMiddleLine, _canvas.ActualWidth, _canvas.ActualHeight);
-            SetWidthHeight(_bottomMiddleLine, _canvas.ActualWidth, _canvas.ActualHeight);
-
-            // Set the parts of the masking rectangles that remain in place
-            SetCanvasXYWithOffset(_leftMaskingRectangle, 0, 0);
-            _leftMaskingRectangle.Height = _image.Height;
-            Canvas.SetTop(_topMaskingRectangle, _topImageOffset);
-            Canvas.SetTop(_rightMaskingRectangle, _topImageOffset);
-            _rightMaskingRectangle.Height = _image.Height;
-
-            _isImageLoaded = true;
-
-            // Adjust the parts of the layout that adjust on crop changes
-            AdjustLayout();
         }
 
         private void SetCropForDesiredAspectRatio()
@@ -1333,47 +1291,95 @@ namespace Naylah.Toolkit.UWP.Controls.ImageCropper
             _cropBottom = _image.Height - _cropTop;
         }
 
-        private Rectangle MaybeCreateMaskingRectangle(ref Rectangle rectangle)
+        private void SetCropProperties()
         {
-            if (rectangle == null)
+            CropLeft = (int)(_cropLeft / _scalingFactor);
+            CropTop = (int)(_cropTop / _scalingFactor);
+
+            // Internally, we keep _cropRight and _cropBottom as +1 beyond where the crop should be
+            // which is pretty necessary because of scaling.  We don't want to expose that back
+            // to our customers, however.
+            CropRight = CropLeft + (int)Math.Ceiling((_cropRight - _cropLeft) / _scalingFactor) - 1;
+            CropBottom = CropTop + (int)Math.Ceiling((_cropBottom - _cropTop) / _scalingFactor) - 1;
+
+            // Now, here, we need to add the one back in
+            CropWidth = CropRight - CropLeft + 1;
+            CropHeight = CropBottom - CropTop + 1;
+
+            // And compute our actual aspect ratio
+            ActualAspectRatio = (_cropRight - _cropLeft) / (_cropBottom - _cropTop);
+        }
+        private Point SetCursorForPosition(Point position)
+        {
+            DragMode dragMode = CalculateDragMode(position);
+
+            CoreCursorType cursorType;
+            if (dragMode == DragMode.Full)
             {
-                rectangle = new Rectangle();
-                _canvas.Children.Add(rectangle);
+                cursorType = CoreCursorType.Hand;
+            }
+            else if (dragMode == DragMode.TopLeft || dragMode == DragMode.BottomRight)
+            {
+                cursorType = CoreCursorType.SizeNorthwestSoutheast;
+            }
+            else if (dragMode == DragMode.TopRight || dragMode == DragMode.BottomLeft)
+            {
+                cursorType = CoreCursorType.SizeNortheastSouthwest;
+            }
+            else if (dragMode == DragMode.Top || dragMode == DragMode.Bottom)
+            {
+                cursorType = CoreCursorType.SizeNorthSouth;
+            }
+            else if (dragMode == DragMode.Left || dragMode == DragMode.Right)
+            {
+                cursorType = CoreCursorType.SizeWestEast;
+            }
+            else
+            {
+                cursorType = CoreCursorType.Arrow;
             }
 
-            //// rectangle.Fill = new SolidColorBrush(new Color { A = 0x44 });
-            rectangle.Fill = MaskingBrush;
+            FrameworkElementExtensions.SetCursor(this, new CoreCursor(cursorType, (uint)cursorType));
+            return position;
+        }
+        private void SetPositionWithOffset(Line line, double x1, double y1, double x2, double y2)
+        {
+            line.X1 = x1 + _leftImageOffset;
+            line.Y1 = y1 + _topImageOffset;
 
-            return rectangle;
+            if (x2.IsNaN())
+            {
+                line.X2 = line.X1;
+            }
+            else
+            {
+                line.X2 = Math.Max(line.X1, x2 + _leftImageOffset);
+            }
+
+            if (y2.IsNaN())
+            {
+                line.Y2 = line.Y1;
+            }
+            else
+            {
+                line.Y2 = Math.Max(line.Y1, y2 + _topImageOffset);
+            }
         }
 
-        private Shape MaybeCreateDragControl(ref Shape dragControl)
+        private void SetWidthHeight(FrameworkElement element, double width, double height)
         {
-            if (dragControl == null)
+            //To prevent xaml errors in W8.1...
+
+            if ((width >= element.MinWidth) & (width <= element.MaxWidth))
             {
-                dragControl = new Ellipse();
-                _canvas.Children.Add(dragControl);
+                element.Width = width;
             }
 
-            SetWidthHeight(dragControl, DragControlSize, DragControlSize);
-            dragControl.Stroke = this.Foreground;
-            dragControl.StrokeThickness = DragControlStrokeThickness;
-
-            return dragControl;
-        }
-
-        private Line MaybeCreateLine(ref Line line, double thickness)
-        {
-            if (line == null)
+            if ((height >= element.MinHeight) & (height <= element.MaxHeight))
             {
-                line = new Line();
-                _canvas.Children.Add(line);
+                element.Height = height;
             }
 
-            line.Stroke = this.Foreground;
-            line.StrokeThickness = thickness;
-
-            return line;
         }
     }
 }

@@ -6,22 +6,16 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    
-    xmlns:naylahImageCropper="using:Naylah.Toolkit.UWP.Controls.ImageCropper"
-    
-    >
 
-    <Grid 
+    xmlns:ImageChooser="using:Naylah.Toolkit.UWP.Controls.ImageChooser">
+
+    <Grid
         x:Name="gdPageContent"
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-        <naylahImageCropper:ImageCropper
+        <ImageChooser:ImageChooser
             x:Name="imageCropper"
-            >
-            
-        </naylahImageCropper:ImageCropper>
-        
+            AspectRatio="ar16x9">
+        </ImageChooser:ImageChooser>
     </Grid>
-    
-    
 </Page>

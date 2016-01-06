@@ -112,6 +112,9 @@
     <Compile Include="Controls\CircularSlider\IMathHelper.cs" />
     <Compile Include="Controls\CircularSlider\PadMinutesConverter.cs" />
     <Compile Include="Controls\CircularSlider\PercentageConverter.cs" />
+    <Compile Include="Controls\ImageChooser\ImageChooser.xaml.cs">
+      <DependentUpon>ImageChooser.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ImageCropper\ImageCropper.cs" />
     <Compile Include="Controls\SideBar\SideBar.cs" />
     <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
@@ -129,8 +132,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Naylah.Toolkit.UWP.rd.xml" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Controls\ImageChooser\ImageChooser.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ImageCropper\ImageCropper.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
