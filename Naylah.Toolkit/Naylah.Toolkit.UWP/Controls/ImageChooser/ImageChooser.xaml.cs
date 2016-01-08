@@ -430,7 +430,7 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
                 {
                     if (SelectionCallback != null)
                     {
-                        SelectionCallback(CroppedImageStorageFile);
+                        SelectionCallback(ImageStorageFile);
                     }
                 }
             }

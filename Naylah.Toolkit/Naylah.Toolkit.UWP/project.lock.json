@@ -1574,6 +1574,13 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Naylah.Toolkit.UWP/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "[8.0.1, )",
+          "Q42.WinRT": "[1.5.0.42, )",
+          "WinRTXamlToolkit.UWP": "[1.9.4, )"
+        }
       }
     },
     "UAP,Version=v10.0/win10-arm": {
@@ -3238,6 +3245,13 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Naylah.Toolkit.UWP/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "[8.0.1, )",
+          "Q42.WinRT": "[1.5.0.42, )",
+          "WinRTXamlToolkit.UWP": "[1.9.4, )"
+        }
       }
     },
     "UAP,Version=v10.0/win10-arm-aot": {
@@ -4873,6 +4887,13 @@
         },
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
+        }
+      },
+      "Naylah.Toolkit.UWP/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "[8.0.1, )",
+          "Q42.WinRT": "[1.5.0.42, )",
+          "WinRTXamlToolkit.UWP": "[1.9.4, )"
         }
       }
     },
@@ -6543,6 +6564,13 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Naylah.Toolkit.UWP/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "[8.0.1, )",
+          "Q42.WinRT": "[1.5.0.42, )",
+          "WinRTXamlToolkit.UWP": "[1.9.4, )"
+        }
       }
     },
     "UAP,Version=v10.0/win10-x64-aot": {
@@ -8178,6 +8206,13 @@
         },
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
+        }
+      },
+      "Naylah.Toolkit.UWP/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "[8.0.1, )",
+          "Q42.WinRT": "[1.5.0.42, )",
+          "WinRTXamlToolkit.UWP": "[1.9.4, )"
         }
       }
     },
@@ -9848,6 +9883,13 @@
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
         }
+      },
+      "Naylah.Toolkit.UWP/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "[8.0.1, )",
+          "Q42.WinRT": "[1.5.0.42, )",
+          "WinRTXamlToolkit.UWP": "[1.9.4, )"
+        }
       }
     },
     "UAP,Version=v10.0/win10-x86-aot": {
@@ -11483,6 +11525,13 @@
         },
         "runtime": {
           "lib/uap10.0/WinRTXamlToolkit.dll": {}
+        }
+      },
+      "Naylah.Toolkit.UWP/1.0.0": {
+        "dependencies": {
+          "Newtonsoft.Json": "[8.0.1, )",
+          "Q42.WinRT": "[1.5.0.42, )",
+          "WinRTXamlToolkit.UWP": "[1.9.4, )"
         }
       }
     }
@@ -15138,6 +15187,23 @@
         "lib/uap10.0/WinRTXamlToolkit/WinRTXamlToolkit.xr.xml",
         "package/services/metadata/core-properties/deced4abe78a4a6e8c4a83fae1aa2cb0.psmdcp",
         "WinRTXamlToolkit.UWP.nuspec"
+      ]
+    },
+    "Naylah.Toolkit.UWP/1.0.0": {
+      "sha512": "3O1zvFO218daED1fWwUGW4t5/sRVln6OV5am2YUV6hi41dpomUjkWfgUb6aUIqXUTbWotEWuZvb2QyWrArXOuQ==",
+      "type": "Package",
+      "files": [
+        "[Content_Types].xml",
+        "_rels/.rels",
+        "lib/uap10.0/Naylah.Toolkit.UWP/Controls/ImageChooser/ImageChooser.xaml",
+        "lib/uap10.0/Naylah.Toolkit.UWP/Controls/ImageCropper/ImageCropper.xaml",
+        "lib/uap10.0/Naylah.Toolkit.UWP/Controls/SideBar/SideBar.xaml",
+        "lib/uap10.0/Naylah.Toolkit.UWP/Naylah.Toolkit.UWP.dll",
+        "lib/uap10.0/Naylah.Toolkit.UWP/Naylah.Toolkit.UWP.pri",
+        "lib/uap10.0/Naylah.Toolkit.UWP/Naylah.Toolkit.UWP.xr.xml",
+        "lib/uap10.0/Naylah.Toolkit.UWP/Themes/Generic.xaml",
+        "Naylah.Toolkit.UWP.nuspec",
+        "package/services/metadata/core-properties/05b2ac124a334e6281f06e9609610d4c.psmdcp"
       ]
     }
   },
