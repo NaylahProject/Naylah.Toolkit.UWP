@@ -19,35 +19,124 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using WinRTXamlToolkit.IO.Extensions;
-
-// The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
+using WinRTXamlToolkit.Imaging;
+using WinRTXamlToolkit.Net;
 
 namespace Naylah.Toolkit.UWP.Controls.ImageChooser
 {
-    public enum ImageChooserAspectRatio
-    {
-        NoRatio,
-        ar1x1,
-        ar4x3,
-        ar16x9,
-        ar21x9
-    }
-
-    public enum ImageChooserPhase
-    {
-        ImagePreview,
-        Cropping
-    }
+    
 
     public sealed partial class ImageChooser : UserControl, INotifyPropertyChanged
     {
-        // Using a DependencyProperty as the backing store for ActualPhase.  This enables animation, styling, binding, etc...
+
+        #region SelectedImage DP
+
+        public WriteableBitmap SelectedImage
+        {
+            get { return (WriteableBitmap)GetValue(SelectedImageProperty); }
+            set { SetValue(SelectedImageProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectedImageProperty =
+            DependencyProperty.Register("SelectedImage", typeof(WriteableBitmap), typeof(ImageChooser), new PropertyMetadata(default(WriteableBitmap), OnSelectedImageChanged));
+
+        private static void OnSelectedImageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var target = (ImageChooser)d;
+            WriteableBitmap oldSelectedImage = (WriteableBitmap)e.OldValue;
+            WriteableBitmap newSelectedImage = target.SelectedImage;
+            target.DoSelectedImageBackup(oldSelectedImage);
+
+        }
+
+        private void DoSelectedImageBackup(WriteableBitmap oldSelectedImage)
+        {
+            if (oldSelectedImage != null)
+            {
+                BackupSelectedImage = oldSelectedImage;
+
+            }
+        }
+
+
+
+        #endregion
+
+        #region CroppedImage DP
+
+        public BitmapImage CroppedImage
+        {
+            get { return (BitmapImage)GetValue(CroppedImageProperty); }
+            set { SetValue(CroppedImageProperty, value); }
+        }
+
+        public static readonly DependencyProperty CroppedImageProperty =
+            DependencyProperty.Register("CroppedImage", typeof(BitmapImage), typeof(ImageChooser), new PropertyMetadata(default(WriteableBitmap)));
+
+        #endregion
+
+        #region BackupSelectedImage DP
+
+
+        //TODO: History as list :D
+        public WriteableBitmap BackupSelectedImage
+        {
+            get { return (WriteableBitmap)GetValue(BackupSelectedImageProperty); }
+            set { SetValue(BackupSelectedImageProperty, value); }
+        }
+
+        public static readonly DependencyProperty BackupSelectedImageProperty =
+            DependencyProperty.Register("BackupSelectedImage", typeof(WriteableBitmap), typeof(ImageChooser), new PropertyMetadata(default(WriteableBitmap)));
+
+
+
+        #endregion
+
+
+
+        #region ActualPhase DP
+
+        public ImageChooserPhase ActualPhase
+        {
+            get { return (ImageChooserPhase)GetValue(ActualPhaseProperty); }
+            set { SetValue(ActualPhaseProperty, value); }
+        }
+
         public static readonly DependencyProperty ActualPhaseProperty =
             DependencyProperty.Register("ActualPhase", typeof(ImageChooserPhase), typeof(ImageChooser), new PropertyMetadata(ImageChooserPhase.ImagePreview, OnActualPhaseChangedCallback));
 
-        // Using a DependencyProperty as the backing store for AspectRatio.  This enables animation, styling, binding, etc...
+        private static void OnActualPhaseChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var userControl = (ImageChooser)d;
+
+            userControl.RaisePropertyChanged(() => userControl.ImagePreviewPhase);
+            userControl.RaisePropertyChanged(() => userControl.CroppingPhase);
+        }
+
+        #endregion
+
+        #region AspectRation DP
+
+        public ImageChooserAspectRatio AspectRatio
+        {
+            get { return (ImageChooserAspectRatio)GetValue(AspectRatioProperty); }
+            set { SetValue(AspectRatioProperty, value); }
+        }
+
         public static readonly DependencyProperty AspectRatioProperty =
             DependencyProperty.Register("AspectRatio", typeof(ImageChooserAspectRatio), typeof(ImageChooser), new PropertyMetadata(ImageChooserAspectRatio.NoRatio));
+
+        #endregion
+
+
+
+        #region ImageSource DP
+
+        public ImageSource ImageSource
+        {
+            get { return (ImageSource)GetValue(ImageSourceProperty); }
+            set { SetValue(ImageSourceProperty, value); }
+        }
 
         public static readonly DependencyProperty ImageSourceProperty =
             DependencyProperty.Register(
@@ -56,45 +145,26 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
                 typeof(ImageChooser),
                 new PropertyMetadata(null, OnOriginalImageSourceChanged));
 
-        // Using a DependencyProperty as the backing store for IsBusy.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsBusyProperty =
-            DependencyProperty.Register("IsBusy", typeof(bool), typeof(ImageChooser), new PropertyMetadata(false, IsBusyChangedCallback));
-
-        private bool _isValidAspectRatio;
-
-        public ImageChooser()
+        private static void OnOriginalImageSourceChanged(
+            DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            this.InitializeComponent();
-            this.SizeChanged += ImageChooser_SizeChanged;
+            var target = (ImageChooser)d;
+            ImageSource oldImageSource = (ImageSource)e.OldValue;
+            ImageSource newImageSource = target.ImageSource;
+            target.OnImageSourceChanged(oldImageSource, newImageSource);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public ImageChooserPhase ActualPhase
+        private void OnImageSourceChanged(
+            ImageSource oldImageSource,
+            ImageSource newImageSource
+            )
         {
-            get { return (ImageChooserPhase)GetValue(ActualPhaseProperty); }
-            set { SetValue(ActualPhaseProperty, value); }
+            LoadAndCacheImageSource();
         }
 
-        public ImageChooserAspectRatio AspectRatio
-        {
-            get { return (ImageChooserAspectRatio)GetValue(AspectRatioProperty); }
-            set { SetValue(AspectRatioProperty, value); }
-        }
+        #endregion
 
-        public StorageFile BackupOriginalStorageFile { get; private set; }
-        public StorageFile CroppedImageStorageFile { get; set; }
-        public bool CroppingPhase { get { return ActualPhase == ImageChooserPhase.Cropping && !IsBusy; } }
-        public StorageFolder ImageChooserTempFolder { get; private set; }
-        public bool ImagePreviewPhase { get { return ActualPhase == ImageChooserPhase.ImagePreview && !IsBusy; } }
-
-        public ImageSource ImageSource
-        {
-            get { return (ImageSource)GetValue(ImageSourceProperty); }
-            set { SetValue(ImageSourceProperty, value); }
-        }
-
-        public StorageFile ImageStorageFile { get; set; }
+        #region IsBusy DP
 
         public bool IsBusy
         {
@@ -102,16 +172,499 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
             set { SetValue(IsBusyProperty, value); }
         }
 
+        public static readonly DependencyProperty IsBusyProperty =
+            DependencyProperty.Register("IsBusy", typeof(bool), typeof(ImageChooser), new PropertyMetadata(false, IsBusyChangedCallback));
+
+        private static void IsBusyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var userControl = (ImageChooser)d;
+
+            userControl.RaisePropertyChanged(() => userControl.ImagePreviewPhase);
+            userControl.RaisePropertyChanged(() => userControl.CroppingPhase);
+        }
+
+        
+
+        #endregion
+
+
+        #region Phases
+
+        public bool ImagePreviewPhase { get { return ActualPhase == ImageChooserPhase.ImagePreview && !IsBusy; } }
+        public bool CroppingPhase { get { return ActualPhase == ImageChooserPhase.Cropping && !IsBusy; } }
+
+        #endregion
+
+
+        #region Pickers (Allows end-user customization) :)
+
+        public FileOpenPicker DefaultFileOpenPicker { get; set; }
+        public CameraCaptureUI DefaultCameraCaptureUI { get; set; }
+        public FileSavePicker DefaultFileSavePicker { get; set; }
+
+        #endregion
+
+
+        #region Others
+
+        public Action<WriteableBitmap> SelectionCallback { get; set; }
+
+        public StorageFolder ImageChooserTempFolder { get; private set; }
+
+        private bool _isValidAspectRatio;
+
         public bool IsValidAspectRatio
         {
             get { return _isValidAspectRatio; }
-            set
+            set { _isValidAspectRatio = value; }
+        }
+
+        #endregion
+
+
+        
+
+        public ImageChooser()
+        {
+            this.InitializeComponent();
+            this.SizeChanged += ImageChooser_SizeChanged;
+            this.InitializePickers();
+            this.imagePreview.ImageOpened += (s, a) => {
+                var a1 = 1;
+            };
+        }
+
+
+        private void InitializePickers()
+        {
+
+            DefaultFileOpenPicker = new FileOpenPicker();
+            DefaultFileOpenPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            DefaultFileOpenPicker.ViewMode = PickerViewMode.Thumbnail;
+            DefaultFileOpenPicker.FileTypeFilter.Clear();
+            //DefaultFileOpenPicker.FileTypeFilter.Add(".bmp"); // really?? lol
+            DefaultFileOpenPicker.FileTypeFilter.Add(".png");
+            DefaultFileOpenPicker.FileTypeFilter.Add(".jpeg");
+            DefaultFileOpenPicker.FileTypeFilter.Add(".jpg");
+
+            DefaultCameraCaptureUI = new CameraCaptureUI();
+            DefaultCameraCaptureUI.PhotoSettings.AllowCropping = false;
+            DefaultCameraCaptureUI.PhotoSettings.MaxResolution = CameraCaptureUIMaxPhotoResolution.HighestAvailable;
+
+            DefaultFileSavePicker = new FileSavePicker();
+            DefaultFileSavePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+            DefaultFileSavePicker.FileTypeChoices.Add("Jpeg", new List<string>() { ".jpg" });
+            DefaultFileSavePicker.FileTypeChoices.Add("Png", new List<string>() { ".png" });
+        }
+
+
+        #region Aspect Ration things
+
+        
+
+
+        public double GetRatio()
+        {
+            switch (AspectRatio)
             {
-                _isValidAspectRatio = value;
+                case ImageChooserAspectRatio.ar1x1: return 1;
+                case ImageChooserAspectRatio.ar4x3: return 1.3;
+                case ImageChooserAspectRatio.ar16x9: return 1.7;
+                case ImageChooserAspectRatio.ar21x9: return 2.3;
+                default: return 0;
             }
         }
 
-        public Action<StorageFile> SelectionCallback { get; set; }
+        #endregion
+
+        
+
+
+
+
+
+        private async Task BrowsePhotos()
+        {
+            try
+            {
+                
+                if (IsBusy)
+                {
+                    return;
+                }
+
+                IsBusy = true;
+
+                // Open the file picker.
+                StorageFile file = await DefaultFileOpenPicker.PickSingleFileAsync();
+
+                await LoadSelectedImageFromExternalStorage(file);
+                
+
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        
+
+        private async Task LoadSelectedImageFromExternalStorage(StorageFile file)
+        {
+
+            if (file == null)
+            {
+                return;
+            }
+
+            file = await CopyToTemp(file);
+
+            var sImage = await WriteableBitmapLoadExtensions.LoadAsync(file);
+            await LoadAndCheckSelectedImage(sImage);
+
+        }
+
+        private async Task<StorageFile> CopyToTemp(StorageFile storageFile1)
+        {
+            var newFile = await ImageChooserTempFolder.CreateTempFileAsync();
+
+            await storageFile1.CopyAndReplaceAsync(newFile);
+
+            return newFile;
+        }
+
+        private async Task LoadAndCacheImageSource()
+        {
+            try
+            {
+                if (IsBusy)
+                {
+                    return;
+                }
+
+                IsBusy = true;
+
+                ResetProps();
+
+
+                ActualPhase = ImageChooserPhase.ImagePreview;
+                
+
+                await PrepareImageCropperTempFolder();
+
+                var bitmapImage = (BitmapImage)ImageSource;
+
+                if (bitmapImage == null)
+                {
+                    return;
+                }
+
+                var uriSource = bitmapImage.UriSource;
+
+                var downloadedStorageFile = await LoadStorageFileFromUri(uriSource);
+
+                var sImage = await WriteableBitmapLoadExtensions.LoadAsync(downloadedStorageFile);
+
+                await LoadAndCheckSelectedImage(sImage);
+
+                DoSelectedImageBackup(SelectedImage);
+
+            
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async Task LoadAndCheckSelectedImage(WriteableBitmap sImage)
+        {
+            SelectedImage = sImage;
+
+            CheckRatio();
+        }
+
+        
+
+        private async Task DoSelection()
+        {
+            try
+            {
+                if (IsBusy)
+                {
+                    return;
+                }
+
+                if (CroppingPhase)
+                {
+                    IsBusy = true;
+
+                    await CropImage();
+
+                 
+                }
+
+                if (ImagePreviewPhase)
+                {
+                    if (SelectionCallback != null)
+                    {
+                        SelectionCallback(SelectedImage);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                
+            }
+            finally
+            {
+                ActualPhase = ImageChooserPhase.ImagePreview;
+                IsBusy = false;
+            }
+        }
+
+        private async Task CropImage()
+        {
+
+            var croppedImage = SelectedImage.Crop(
+                imageCropper.CropLeft, imageCropper.CropTop, imageCropper.CropRight, imageCropper.CropBottom
+                );
+
+            await LoadAndCheckSelectedImage(croppedImage);
+
+        }
+
+        private void ImageChooser_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            try
+            {
+                imageCropper.DoFullLayout();
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private async Task CheckRatio()
+        {
+            try
+            {
+                await Task.Delay(100);
+
+                IsValidAspectRatio = false;
+
+                if (AspectRatio != ImageChooserAspectRatio.NoRatio)
+                {
+                    double d = (double)SelectedImage.PixelWidth / (double)SelectedImage.PixelHeight;
+
+                    d = Math.Round(d, 1, MidpointRounding.ToEven);
+
+                    imageCropper.DesiredAspectRatio = GetRatio();
+
+                    IsValidAspectRatio = (Math.Abs(imageCropper.DesiredAspectRatio - d) < 0.19);
+                }
+                else
+                {
+                    IsValidAspectRatio = true;
+                }
+
+                if (!IsValidAspectRatio)
+                {
+                    PrepareForCrop();
+                }
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+            }
+        }
+
+       
+
+        private async Task<StorageFile> LoadStorageFileFromUri(Uri uriSource)
+        {
+            if (uriSource.IsFile)
+            {
+                return await StorageFile.GetFileFromPathAsync(uriSource.ToString());
+            }
+            else
+            {
+                var s = await WebFile.SaveAsync(uriSource, ImageChooserTempFolder);
+                return s;
+            }
+        }
+
+        
+
+        private async Task PrepareForCrop()
+        {
+            try
+            {
+                if (IsBusy)
+                {
+                    return;
+                }
+
+                IsBusy = true;
+
+                ActualPhase = ImageChooserPhase.Cropping;
+
+                CroppedImage = null;
+
+                var cropFile = await SelectedImage.Copy().SaveToFile(ImageChooserTempFolder);
+
+                CroppedImage = new BitmapImage(new Uri(cropFile.Path));
+                
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async Task PrepareImageCropperTempFolder()
+        {
+            ImageChooserTempFolder = await ApplicationData.Current.TemporaryFolder.CreateFolderAsync("ImageChooserTemp", CreationCollisionOption.OpenIfExists);
+            await ImageChooserTempFolder.DeleteFilesAsync(true);
+        }
+
+        private void ResetProps()
+        {
+            BackupSelectedImage = null;
+            SelectedImage = null;
+
+            CroppedImage = null;
+
+           
+        }
+
+        private async Task SaveImageLocal()
+        {
+            try
+            {
+                if (IsBusy)
+                {
+                    return;
+                }
+
+                IsBusy = true;
+
+                if (SelectedImage == null)
+                {
+                    return;
+                }
+
+                
+
+                StorageFile saveImageFile = await DefaultFileSavePicker.PickSaveFileAsync();
+
+                if (saveImageFile != null)
+                {
+                    var file = await SelectedImage.SaveToFile(ImageChooserTempFolder, saveImageFile.Name, CreationCollisionOption.ReplaceExisting);
+                    await file.CopyAndReplaceAsync(saveImageFile);
+                }
+                
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+      
+
+        private async Task TakeAPicture()
+        {
+            try
+            {
+                if (IsBusy)
+                {
+                    return;
+                }
+
+                IsBusy = true;
+
+                StorageFile capturedMedia =
+                    await DefaultCameraCaptureUI.CaptureFileAsync(CameraCaptureUIMode.Photo);
+
+                await LoadSelectedImageFromExternalStorage(capturedMedia);
+
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+
+
+        #region Buttons events
+
+        private void tbtCrop_Click(object sender, RoutedEventArgs e)
+        {
+            if (CroppingPhase)
+            {
+                ActualPhase = ImageChooserPhase.ImagePreview;
+            }
+            else
+            {
+                PrepareForCrop();
+            }
+        }
+
+        private void btResetToOriginalBackup_Click(object sender, RoutedEventArgs e)
+        {
+            SelectedImage = BackupSelectedImage.Copy();
+            BackupSelectedImage = SelectedImage;
+            //WTF? uhahuaahu
+
+        }
+
+        private void btBrowsePhotos_Click(object sender, RoutedEventArgs e)
+        {
+            BrowsePhotos();
+        }
+
+        private void btSaveImageLocal_Click(object sender, RoutedEventArgs e)
+        {
+            SaveImageLocal();
+        }
+
+        private void btSelectImage_Click(object sender, RoutedEventArgs e)
+        {
+            DoSelection();
+        }
+
+        private void btTakeAPicture_Click(object sender, RoutedEventArgs e)
+        {
+            TakeAPicture();
+        }
+
+
+        #endregion
+
+
+        #region INotifyPropertyChanged implementation
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public static string GetPropertyName<T>(Expression<Func<T>> propertyExpression)
         {
@@ -137,92 +690,6 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
             return property.Name;
         }
 
-        async public static Task SaveCroppedBitmapAsync(
-            StorageFile originalImageFile,
-            StorageFile newImageFile,
-            Point startPoint, Size cropSize
-            )
-        {
-            // Convert start point and size to integer.
-            uint startPointX = (uint)Math.Floor(startPoint.X);
-            uint startPointY = (uint)Math.Floor(startPoint.Y);
-            uint height = (uint)Math.Floor(cropSize.Height);
-            uint width = (uint)Math.Floor(cropSize.Width);
-
-            using (IRandomAccessStream originalImgFileStream = await originalImageFile.OpenReadAsync())
-            {
-                // Create a decoder from the stream. With the decoder, we can get
-                // the properties of the image.
-                BitmapDecoder decoder = await BitmapDecoder.CreateAsync(originalImgFileStream);
-
-                // Refine the start point and the size.
-                if (startPointX + width > decoder.PixelWidth)
-                {
-                    startPointX = decoder.PixelWidth - width;
-                }
-
-                if (startPointY + height > decoder.PixelHeight)
-                {
-                    startPointY = decoder.PixelHeight - height;
-                }
-
-                // Get the cropped pixels.
-                byte[] pixels = await GetPixelData(decoder, startPointX, startPointY, width, height,
-                    decoder.PixelWidth, decoder.PixelHeight);
-
-                using (IRandomAccessStream newImgFileStream = await newImageFile.OpenAsync(FileAccessMode.ReadWrite))
-                {
-                    Guid encoderID = Guid.Empty;
-
-                    switch (newImageFile.FileType.ToLower())
-                    {
-                        case ".png":
-                            encoderID = BitmapEncoder.PngEncoderId;
-                            break;
-
-                        case ".bmp":
-                            encoderID = BitmapEncoder.BmpEncoderId;
-                            break;
-
-                        default:
-                            encoderID = BitmapEncoder.JpegEncoderId;
-                            break;
-                    }
-
-                    // Create a bitmap encoder
-
-                    BitmapEncoder bmpEncoder = await BitmapEncoder.CreateAsync(
-                        encoderID,
-                        newImgFileStream);
-
-                    // Set the pixel data to the cropped image.
-                    bmpEncoder.SetPixelData(
-                        BitmapPixelFormat.Bgra8,
-                        BitmapAlphaMode.Straight,
-                        width,
-                        height,
-                        decoder.DpiX,
-                        decoder.DpiY,
-                        pixels);
-
-                    // Flush the data to file.
-                    await bmpEncoder.FlushAsync();
-                }
-            }
-        }
-
-        public double GetRatio()
-        {
-            switch (AspectRatio)
-            {
-                case ImageChooserAspectRatio.ar1x1: return 1;
-                case ImageChooserAspectRatio.ar4x3: return 1.3;
-                case ImageChooserAspectRatio.ar16x9: return 1.7;
-                case ImageChooserAspectRatio.ar21x9: return 2.3;
-                default: return 0;
-            }
-        }
-
         public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -238,424 +705,24 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
             }
         }
 
-        async static private Task<byte[]> GetPixelData(BitmapDecoder decoder, uint startPointX, uint startPointY,
-            uint width, uint height, uint scaledWidth, uint scaledHeight)
-        {
-            BitmapTransform transform = new BitmapTransform();
-            BitmapBounds bounds = new BitmapBounds();
-            bounds.X = startPointX;
-            bounds.Y = startPointY;
-            bounds.Height = height;
-            bounds.Width = width;
-            transform.Bounds = bounds;
+        #endregion
 
-            transform.ScaledWidth = scaledWidth;
-            transform.ScaledHeight = scaledHeight;
-
-            // Get the cropped pixels within the bounds of transform.
-            PixelDataProvider pix = await decoder.GetPixelDataAsync(
-                BitmapPixelFormat.Bgra8,
-                BitmapAlphaMode.Straight,
-                transform,
-                ExifOrientationMode.IgnoreExifOrientation,
-                ColorManagementMode.ColorManageToSRgb);
-            byte[] pixels = pix.DetachPixelData();
-            return pixels;
-        }
-
-        private static void IsBusyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var userControl = (ImageChooser)d;
-
-            userControl.RaisePropertyChanged(() => userControl.ImagePreviewPhase);
-            userControl.RaisePropertyChanged(() => userControl.CroppingPhase);
-        }
-
-        private static void OnActualPhaseChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var userControl = (ImageChooser)d;
-
-            userControl.RaisePropertyChanged(() => userControl.ImagePreviewPhase);
-            userControl.RaisePropertyChanged(() => userControl.CroppingPhase);
-        }
-
-        private static void OnOriginalImageSourceChanged(
-            DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var target = (ImageChooser)d;
-            ImageSource oldImageSource = (ImageSource)e.OldValue;
-            ImageSource newImageSource = target.ImageSource;
-            target.OnImageSourceChanged(oldImageSource, newImageSource);
-        }
-
-        private async Task BrowsePhotos()
-        {
-            try
-            {
-                if (IsBusy)
-                {
-                    return;
-                }
-
-                IsBusy = true;
-
-                FileOpenPicker openPicker = new FileOpenPicker();
-                openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-                openPicker.ViewMode = PickerViewMode.Thumbnail;
-
-                // Filter to include a sample subset of file types.
-                openPicker.FileTypeFilter.Clear();
-                openPicker.FileTypeFilter.Add(".bmp");
-                openPicker.FileTypeFilter.Add(".png");
-                openPicker.FileTypeFilter.Add(".jpeg");
-                openPicker.FileTypeFilter.Add(".jpg");
-
-                // Open the file picker.
-                StorageFile file = await openPicker.PickSingleFileAsync();
-
-                if (file != null)
-                {
-                    file = await CopyToTemp(file);
-
-                    await LoadPreviewFromStorageFile(file);
-                }
-            }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private async void btBrowsePhotos_Click(object sender, RoutedEventArgs e)
-        {
-            await BrowsePhotos();
-        }
-
-        private void btResetToOriginalBackup_Click(object sender, RoutedEventArgs e)
-        {
-            LoadPreviewFromStorageFile(BackupOriginalStorageFile);
-        }
-
-        private void btSaveImageLocal_Click(object sender, RoutedEventArgs e)
-        {
-            SaveImageLocal();
-        }
-
-        private void btSelectImage_Click(object sender, RoutedEventArgs e)
-        {
-            DoSelection();
-        }
-
-        private void btTakeAPicture_Click(object sender, RoutedEventArgs e)
-        {
-            TakeAPicture();
-        }
-
-        private async Task<StorageFile> CopyToTemp(StorageFile storageFile1)
-        {
-            var newFile = await ImageChooserTempFolder.CreateTempFileAsync(Path.GetExtension(storageFile1.Name));
-
-            await storageFile1.CopyAndReplaceAsync(newFile);
-
-            return newFile;
-        }
-
-        private async Task DoOriginalImageLoad()
-        {
-            try
-            {
-                if (IsBusy)
-                {
-                    return;
-                }
-
-                IsBusy = true;
-
-                ActualPhase = ImageChooserPhase.ImagePreview;
-
-
-                ResetProps();
-
-                await PrepareImageCropperTempFolter();
-
-
-                var uriSource = ((BitmapImage)ImageSource).UriSource;
-
-                var downloadedStorageFile = await LoadStorageFileFromUri(uriSource);
-
-                var tempStorage = await CopyToTemp(downloadedStorageFile);
-
-                await LoadPreviewFromStorageFile(tempStorage);
-
-                BackupOriginalStorageFile = ImageStorageFile;
-            }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private async Task DoSelection()
-        {
-            try
-            {
-                if (IsBusy)
-                {
-                    return;
-                }
-
-                if (CroppingPhase)
-                {
-                    IsBusy = true;
-
-                    CroppedImageStorageFile = await ImageChooserTempFolder.CreateTempFileAsync(Path.GetExtension(ImageStorageFile.Name));
-
-                    await SaveCroppedBitmapAsync(
-                        ImageStorageFile,
-                        CroppedImageStorageFile,
-                        new Point(imgCropper.CropLeft, imgCropper.CropTop),
-                        new Size(imgCropper.CropWidth, imgCropper.CropHeight)
-                    );
-
-                    await LoadPreviewFromStorageFile(CroppedImageStorageFile);
-                }
-
-                if (ImagePreviewPhase)
-                {
-                    if (SelectionCallback != null)
-                    {
-                        SelectionCallback(ImageStorageFile);
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                
-            }
-            finally
-            {
-                ActualPhase = ImageChooserPhase.ImagePreview;
-                IsBusy = false;
-            }
-        }
-
-        private void ImageChooser_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            try
-            {
-                imgCropper.DoFullLayout();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        private async void ImagePreview_ImageOpened(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                await Task.Delay(100);
-
-                IsValidAspectRatio = false;
-
-                var bmp = (BitmapImage)((Image)sender).Source;
-
-                if (AspectRatio != ImageChooserAspectRatio.NoRatio)
-                {
-                    double d = (double)bmp.PixelWidth / (double)bmp.PixelHeight;
-
-                    d = Math.Round(d, 1, MidpointRounding.ToEven);
-
-                    imgCropper.DesiredAspectRatio = GetRatio();
-
-                    IsValidAspectRatio = (Math.Abs(imgCropper.DesiredAspectRatio - d) < 0.19);
-                }
-                else
-                {
-                    IsValidAspectRatio = true;
-                }
-
-                if (!IsValidAspectRatio)
-                {
-                    PrepareForCrop();
-                }
-            }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                imagePreview.ImageOpened -= ImagePreview_ImageOpened;
-            }
-        }
-
-        private async Task LoadPreviewFromStorageFile(StorageFile imageStorageFile)
-        {
-            ImageStorageFile = imageStorageFile;
-
-            imagePreview.Source = null;
-
-            if (ImageStorageFile != null)
-            {
-                imagePreview.ImageOpened += ImagePreview_ImageOpened;
-                imagePreview.Source = new BitmapImage(new Uri(ImageStorageFile.Path));
-            }
-        }
-
-        private async Task<StorageFile> LoadStorageFileFromUri(Uri uriSource)
-        {
-            if (uriSource.IsFile)
-            {
-                return await StorageFile.GetFileFromPathAsync(uriSource.ToString());
-            }
-            else
-            {
-                var s = await WebDataCache.GetAsync(uriSource, true);
-                await s.RenameAsync(s.Name + Path.GetExtension(uriSource.ToString()), NameCollisionOption.ReplaceExisting);
-                return s;
-            }
-        }
-
-        private void OnImageSourceChanged(
-            ImageSource oldImageSource,
-            ImageSource newImageSource
-            )
-        {
-            Setup();
-        }
-
-        private async Task PrepareForCrop()
-        {
-            try
-            {
-                if (IsBusy)
-                {
-                    return;
-                }
-
-                IsBusy = true;
-
-                ActualPhase = ImageChooserPhase.Cropping;
-
-                CroppedImageStorageFile = null;
-                imgCropper.ImageSource = null;
-
-                imgCropper.ImageSource = new BitmapImage(new Uri(ImageStorageFile.Path));
-            }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private async Task PrepareImageCropperTempFolter()
-        {
-            ImageChooserTempFolder = await ApplicationData.Current.TemporaryFolder.CreateFolderAsync("ImageChooserTemp", CreationCollisionOption.OpenIfExists);
-            await ImageChooserTempFolder.DeleteFilesAsync(true);
-        }
-
-        private void ResetProps()
-        {
-            ImageStorageFile = null;
-            CroppedImageStorageFile = null;
-            imagePreview.Source = null;
-            imgCropper.ImageSource = null;
-        }
-
-        private async Task SaveImageLocal()
-        {
-            try
-            {
-                if (IsBusy)
-                {
-                    return;
-                }
-
-                IsBusy = true;
-
-                FileSavePicker savePicker = new FileSavePicker();
-                savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
-
-                var ext = Path.GetExtension(ImageStorageFile.Name);
-
-                savePicker.FileTypeChoices.Add("Imagem", new List<string>() { ext });
-
-                StorageFile saveImageFile = await savePicker.PickSaveFileAsync();
-
-                if (saveImageFile != null)
-                {
-                    await ImageStorageFile.CopyAndReplaceAsync(saveImageFile);
-                }
-                
-            }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private void Setup()
-        {
-            DoOriginalImageLoad();
-        }
-
-        private async Task TakeAPicture()
-        {
-            try
-            {
-                if (IsBusy)
-                {
-                    return;
-                }
-
-                IsBusy = true;
-
-                CameraCaptureUI cameraUI = new CameraCaptureUI();
-
-                cameraUI.PhotoSettings.AllowCropping = false;
-                cameraUI.PhotoSettings.MaxResolution = CameraCaptureUIMaxPhotoResolution.HighestAvailable;
-
-                StorageFile capturedMedia =
-                    await cameraUI.CaptureFileAsync(CameraCaptureUIMode.Photo);
-
-                if (capturedMedia != null)
-                {
-                    capturedMedia = await CopyToTemp(capturedMedia);
-
-                    await LoadPreviewFromStorageFile(capturedMedia);
-                }
-            }
-            catch (Exception)
-            {
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        private void tbtCrop_Click(object sender, RoutedEventArgs e)
-        {
-            if (CroppingPhase)
-            {
-                ActualPhase = ImageChooserPhase.ImagePreview;
-            }
-            else
-            {
-                PrepareForCrop();
-            }
-        }
     }
+
+
+    public enum ImageChooserAspectRatio
+    {
+        NoRatio,
+        ar1x1,
+        ar4x3,
+        ar16x9,
+        ar21x9
+    }
+
+    public enum ImageChooserPhase
+    {
+        ImagePreview,
+        Cropping
+    }
+
 }

@@ -16,6 +16,7 @@
         <ImageChooser:ImageChooser
             x:Name="imageCropper"
             AspectRatio="ar16x9"
+            ImageSource="https://pbs.twimg.com/profile_images/684089551669850112/_6Uc3W2f_400x400.jpg"
             >
         </ImageChooser:ImageChooser>
     </Grid>

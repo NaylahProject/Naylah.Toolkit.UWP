@@ -102,12 +102,15 @@
 
                 <Image
                     x:Name="imagePreview"
+                    Source="{Binding SelectedImage}"
                     Visibility="{Binding ImagePreviewPhase, Converter={StaticResource TrueToVisibilityConverter}}" />
 
 
                 <imageCropper:ImageCropper
-                    x:Name="imgCropper"
-                    Visibility="{Binding CroppingPhase, Converter={StaticResource TrueToVisibilityConverter}}" />
+                    x:Name="imageCropper"
+                    ImageSource="{Binding CroppedImage}"
+                    Visibility="{Binding CroppingPhase, Converter={StaticResource TrueToVisibilityConverter}}" 
+                    />
             </Grid>
 
             <Grid

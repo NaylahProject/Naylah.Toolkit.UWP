@@ -520,7 +520,7 @@ namespace Naylah.Toolkit.UWP.Controls.ImageCropper
                 return;
             }
 
-            var bi = _image.Source as BitmapImage;
+            var bi = _image.Source as BitmapSource;
             if (bi == null)
             {
                 return;
@@ -600,7 +600,9 @@ namespace Naylah.Toolkit.UWP.Controls.ImageCropper
             }
 
             _image.Source = ImageSource;
+
             var bi = _image.Source as BitmapImage;
+
             if (bi != null)
             {
                 bi.ImageOpened += (sender, e) =>
@@ -612,6 +614,8 @@ namespace Naylah.Toolkit.UWP.Controls.ImageCropper
                     }
                 };
             }
+
+
         }
 
         protected override void OnApplyTemplate()
