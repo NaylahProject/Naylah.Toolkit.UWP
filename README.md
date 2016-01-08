@@ -8,3 +8,10 @@ AppVeyor Build for Universal Windows Plataform it's not supported (yet).
 Contain useful libraries, controls, helpers, architecture, etc. The intent is create a community for developers focusing in deliver better-beatiful apps. To create next generation of apps.
 
 You are welcome to join the Naylah Community or make PRs.
+
+##Loading and cropping images from file explorer
+
+![Upload and Crop](http://imgur.com/mhmiwa0.gif)
+
+##Changing the Aspect Ratio from cropper
+![Aspect Ratio](http://i.imgur.com/PnyDD4o.gif)
