@@ -29,6 +29,48 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
     public sealed partial class ImageChooser : UserControl, INotifyPropertyChanged
     {
 
+        #region Design Customizations
+
+
+
+        public Brush TopCommandBarBackground
+        {
+            get { return (Brush)GetValue(TopCommandBarBackgroundProperty); }
+            set { SetValue(TopCommandBarBackgroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty TopCommandBarBackgroundProperty =
+            DependencyProperty.Register("TopCommandBarBackground", typeof(Brush), typeof(ImageChooser), new PropertyMetadata(TryGetDefaultBrushByKey("SystemControlBackgroundChromeMediumBrush")));
+
+        
+
+        public Brush TopCommandBarForeground
+        {
+            get { return (Brush)GetValue(TopCommandBarForegroundProperty); }
+            set { SetValue(TopCommandBarForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty TopCommandBarForegroundProperty =
+            DependencyProperty.Register("TopCommandBarForeground", typeof(Brush), typeof(ImageChooser), new PropertyMetadata(TryGetDefaultBrushByKey("SystemControlForegroundBaseHighBrush")));
+
+
+        private static object TryGetDefaultBrushByKey(string v)
+        {
+            try
+            {
+                return (Brush)Application.Current.Resources[v];
+            }
+            catch (Exception)
+            {
+                return default(Brush);
+            }
+
+        }
+
+        #endregion
+
+
+
         #region SelectedImage DP
 
         public WriteableBitmap SelectedImage

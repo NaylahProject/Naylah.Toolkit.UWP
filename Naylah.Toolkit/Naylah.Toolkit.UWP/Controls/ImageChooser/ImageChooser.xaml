@@ -38,7 +38,9 @@
                 x:Name="gdHeader"
                 Grid.Row="0">
 
-                <CommandBar>
+                <CommandBar
+                    Background="{Binding TopCommandBarBackground}"
+                    Foreground="{Binding TopCommandBarForeground}">
 
                     <CommandBar.PrimaryCommands>
 
@@ -46,19 +48,25 @@
                             x:Name="btTakeAPicture"
                             Icon="Camera"
                             Click="btTakeAPicture_Click"
-                            IsEnabled="{Binding ImagePreviewPhase}" />
+                            IsEnabled="{Binding ImagePreviewPhase}" 
+                            Foreground="{Binding TopCommandBarForeground}"
+                            />
 
                         <AppBarButton
                             x:Name="btBrowsePhotos"
                             Icon="BrowsePhotos"
                             Click="btBrowsePhotos_Click"
-                            IsEnabled="{Binding ImagePreviewPhase}" />
+                            IsEnabled="{Binding ImagePreviewPhase}"
+                            Foreground="{Binding TopCommandBarForeground}"
+                            />
 
                         <AppBarButton
                             x:Name="tbtCrop"
                             Icon="Crop"
                             Click="tbtCrop_Click"
+                            Foreground="{Binding TopCommandBarForeground}"
                             />
+                        
                     </CommandBar.PrimaryCommands>
 
                     <CommandBar.SecondaryCommands>
