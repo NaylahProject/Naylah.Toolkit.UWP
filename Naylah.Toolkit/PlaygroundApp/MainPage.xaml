@@ -14,7 +14,20 @@
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
         >
 
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Image
+            x:Name="t"
+            Grid.Row="0"
+            >
+            
+        </Image>
+        
         <ImageChooser:ImageChooser
+            Grid.Row="1"
             x:Name="imageCropper"
             TopCommandBarBackground="Pink"
             TopCommandBarForeground="Red"

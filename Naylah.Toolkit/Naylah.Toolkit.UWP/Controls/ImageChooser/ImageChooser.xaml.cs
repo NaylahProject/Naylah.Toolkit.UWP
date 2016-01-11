@@ -249,9 +249,9 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
 
         #region Others
 
-        public Action<WriteableBitmap> SelectionCallback { get; set; }
+        public Action SelectionCallback { get; set; }
 
-        public StorageFolder ImageChooserTempFolder { get; private set; }
+        private StorageFolder ImageChooserTempFolder { get; set; }
 
         private bool _isValidAspectRatio;
 
@@ -271,9 +271,7 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
             this.InitializeComponent();
             this.SizeChanged += ImageChooser_SizeChanged;
             this.InitializePickers();
-            this.imagePreview.ImageOpened += (s, a) => {
-                var a1 = 1;
-            };
+            
         }
 
 
@@ -457,7 +455,7 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
                 {
                     if (SelectionCallback != null)
                     {
-                        SelectionCallback(SelectedImage);
+                        SelectionCallback();
                     }
                 }
             }
@@ -654,6 +652,24 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
             {
                 IsBusy = false;
             }
+        }
+
+
+        public async Task<WriteableBitmap> GetSelectedImageAsWritableImage()
+        {
+            return SelectedImage;
+        }
+
+        public async Task<BitmapImage> GetSelectedImageAsBitmapImage()
+        {
+            var file = await GetSelectedImageAsStorageFile();
+
+            return new BitmapImage(new Uri(file.Path));
+        }
+
+        public async Task<StorageFile> GetSelectedImageAsStorageFile()
+        {
+            return await SelectedImage.Copy().SaveToFile(ImageChooserTempFolder, Guid.NewGuid().ToString() + ".png", CreationCollisionOption.ReplaceExisting);
         }
 
 
