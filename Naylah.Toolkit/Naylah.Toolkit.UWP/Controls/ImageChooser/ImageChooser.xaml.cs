@@ -54,6 +54,28 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
             DependencyProperty.Register("TopCommandBarForeground", typeof(Brush), typeof(ImageChooser), new PropertyMetadata(TryGetDefaultBrushByKey("SystemControlForegroundBaseHighBrush")));
 
 
+
+        public Brush BottomCommandBarBackground
+        {
+            get { return (Brush)GetValue(BottomCommandBarBackgroundProperty); }
+            set { SetValue(BottomCommandBarBackgroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty BottomCommandBarBackgroundProperty =
+            DependencyProperty.Register("BottomCommandBarBackground", typeof(Brush), typeof(ImageChooser), new PropertyMetadata(TryGetDefaultBrushByKey("SystemControlBackgroundChromeMediumBrush")));
+
+
+
+        public Brush BottomCommandBarForeground
+        {
+            get { return (Brush)GetValue(BottomCommandBarForegroundProperty); }
+            set { SetValue(BottomCommandBarForegroundProperty, value); }
+        }
+
+        public static readonly DependencyProperty BottomCommandBarForegroundProperty =
+            DependencyProperty.Register("BottomCommandBarForeground", typeof(Brush), typeof(ImageChooser), new PropertyMetadata(TryGetDefaultBrushByKey("SystemControlForegroundBaseHighBrush")));
+
+
         private static object TryGetDefaultBrushByKey(string v)
         {
             try

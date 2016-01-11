@@ -127,12 +127,15 @@
                 x:Name="gdFooter"
                 Grid.Row="2">
 
-                <CommandBar>
+                <CommandBar  
+                    Background="{Binding BottomCommandBarBackground}"
+                    Foreground="{Binding BottomCommandBarForeground}">
+                    
                     <AppBarButton
                         x:Name="btSelectImage"
                         Icon="Accept"
-
-                        Click="btSelectImage_Click" />
+                        Click="btSelectImage_Click"
+                        Foreground="{Binding BottomCommandBarForeground}"/>
                 </CommandBar>
             </Grid>
         </Grid>
