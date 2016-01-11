@@ -13,7 +13,9 @@
 
     mc:Ignorable="d"
     d:DesignHeight="711"
-    d:DesignWidth="400">
+    d:DesignWidth="400"
+    
+    >
 
     <UserControl.Resources>
         <converters:BooleanToVisibilityConverter x:Key="TrueToVisibilityConverter" ></converters:BooleanToVisibilityConverter>
@@ -22,7 +24,7 @@
     </UserControl.Resources>
 
     <Grid
-        Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        >
 
         <Grid>
 
