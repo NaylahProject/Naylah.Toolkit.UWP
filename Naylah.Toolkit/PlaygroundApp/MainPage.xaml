@@ -31,6 +31,8 @@
             x:Name="imageCropper"
             TopCommandBarBackground="Pink"
             TopCommandBarForeground="Red"
+            BottomCommandBarBackground="Orange"
+            BottomCommandBarForeground="DarkBlue"
             
             ImageSource="https://pbs.twimg.com/profile_images/684089551669850112/_6Uc3W2f_400x400.jpg"
             >

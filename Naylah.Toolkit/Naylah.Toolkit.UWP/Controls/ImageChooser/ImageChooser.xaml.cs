@@ -1,5 +1,4 @@
-﻿using Q42.WinRT.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
