@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Naylah.Toolkit.UWP", "Naylah.Toolkit.UWP\Naylah.Toolkit.UWP.csproj", "{851B3524-57F8-44FF-A53B-83D37A0E0643}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaylahToolkitUWP", "Naylah.Toolkit.UWP\NaylahToolkitUWP.csproj", "{851B3524-57F8-44FF-A53B-83D37A0E0643}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaygroundApp", "PlaygroundApp\PlaygroundApp.csproj", "{8C40608A-2437-4CF4-9F04-ADE8312A3A1E}"
 EndProject
