@@ -292,9 +292,14 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
             this.InitializeComponent();
             this.SizeChanged += ImageChooser_SizeChanged;
             this.InitializePickers();
+            this.InitializeOthers();
             
         }
 
+        private void InitializeOthers()
+        {
+            LoadAndCacheImageSource();
+        }
 
         private void InitializePickers()
         {
@@ -469,7 +474,6 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
 
                     await CropImage();
 
-                 
                 }
 
                 if (ImagePreviewPhase)
