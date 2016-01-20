@@ -121,12 +121,23 @@
     </Compile>
     <Compile Include="Controls\ImageCropper\ImageCropper.cs" />
     <Compile Include="Controls\SideBar\SideBar.cs" />
+    <Compile Include="Converter\AnythingToVisibilityConverter.cs" />
     <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
+    <Compile Include="Converter\CharCaseConverter.cs" />
+    <Compile Include="Converter\ColorToSolidColorBrushConverter.cs" />
+    <Compile Include="Converter\DateTimeToDateDescriptionConverter.cs" />
+    <Compile Include="Converter\DateTimeToDateTimeOffsetConverter.cs" />
+    <Compile Include="Converter\ImagePathToBrushConverter.cs" />
     <Compile Include="Converter\InverseBooleanConverter.cs" />
     <Compile Include="Converter\ListEmptyToVisibilityConverter.cs" />
     <Compile Include="Converter\NullToVisibilityConverter.cs" />
+    <Compile Include="Converter\NumericToStringConverter.cs" />
+    <Compile Include="Converter\NumericValueConverter.cs" />
     <Compile Include="Converter\RelativeDistanceConverter.cs" />
     <Compile Include="Converter\StringEmptyOrNullVisibilityConverter.cs" />
+    <Compile Include="Converter\StringIsNullOrEmptyToBoolConverter.cs" />
+    <Compile Include="Converter\TimeSpanToUTCTimeSpanConverter.cs" />
+    <Compile Include="Converter\ValueConverterGroup.cs" />
     <Compile Include="Extensions\ImageCropperExtensions.cs" />
     <Compile Include="Helpers\ApplicationHelper.cs" />
     <Compile Include="Helpers\DataHelper.cs" />

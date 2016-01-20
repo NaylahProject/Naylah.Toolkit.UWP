@@ -4,35 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace Naylah.Toolkit.UWP.Converter
 {
-
-    /// <summary>
-    /// Converts a Boolean into a Visibility.
-    /// </summary>
-    public class InverseBooleanConverter : IValueConverter
+    public class ImagePathToBrushConverter : IValueConverter
     {
-        /// <summary>
-        /// If set to True, conversion is reversed: True will become Collapsed.
-        /// </summary>
-        public bool IsReversed { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
+            ImageBrush ib = null;
 
             try
             {
-                if (targetType != typeof(bool))
-                    throw new InvalidOperationException("The target must be a boolean");
+                if (value == null) return null;
 
-                return !(bool)value;
+                Uri uri = new Uri(value.ToString(), UriKind.RelativeOrAbsolute);
+
+                ib = new ImageBrush();
+
+                ib.ImageSource = new BitmapImage(uri);
+
+                return ib;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                return value;
+
             }
-           
+
+            return ib;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
