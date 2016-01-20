@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
 
-    xmlns:ImageChooser="using:Naylah.Toolkit.UWP.Controls.ImageChooser">
+    xmlns:ImageChooser="using:Naylah.Toolkit.UWP.Controls.ImageChooser"
+    xmlns:AppVersion="using:Naylah.Toolkit.UWP.Controls.AppVersion">
 
     <Grid
         x:Name="gdPageContent"
@@ -37,5 +38,14 @@
             
             >
         </ImageChooser:ImageChooser>
+
+
+        <AppVersion:AppVersionShellFrame 
+            AppName="App name sample" 
+            Type="Dev"
+            
+            >
+        </AppVersion:AppVersionShellFrame>
+
     </Grid>
 </Page>

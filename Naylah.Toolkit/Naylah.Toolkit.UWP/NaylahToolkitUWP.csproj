@@ -108,6 +108,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\AppVersion\AppVersionShellFrame.xaml.cs">
+      <DependentUpon>AppVersionShellFrame.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\CircularSlider\CircularSliderControl.cs" />
     <Compile Include="Controls\CircularSlider\IGeometryHelper.cs" />
     <Compile Include="Controls\CircularSlider\IMathHelper.cs" />
@@ -138,6 +141,10 @@
     <Folder Include="Imaging\" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Controls\AppVersion\AppVersionShellFrame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\ImageChooser\ImageChooser.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,0 +1,51 @@
+﻿<UserControl
+    x:Class="Naylah.Toolkit.UWP.Controls.AppVersion.AppVersionShellFrame"    
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Naylah.Toolkit.UWP.Controls.AppVersion"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    d:DesignHeight="80"
+    d:DesignWidth="300"
+    
+    
+    >
+    <UserControl.Resources>
+        <x:String x:Key="descDev">Developer copy (confidential)</x:String>
+        <x:String x:Key="descTest">Test copy (confidential)</x:String>
+        <x:String x:Key="descStagging">Preview copy (confidential)</x:String>
+        <x:String x:Key="descProd"> </x:String>
+    </UserControl.Resources>
+    
+    <Grid
+        IsHitTestVisible="True"
+        IsTapEnabled="False"
+        >
+
+        <StackPanel
+            >
+
+            <TextBlock
+                Text="{Binding AppName}"
+                TextAlignment="Right"
+                />
+
+            <TextBlock
+                Text="{Binding TypeDescription}"
+                TextAlignment="Right"
+                />
+
+            <TextBlock
+                Text="{Binding BuildVersion}"
+                TextAlignment="Right"
+                />
+
+        </StackPanel>
+
+
+
+    </Grid>
+</UserControl>
