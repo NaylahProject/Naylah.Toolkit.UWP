@@ -9,7 +9,7 @@
 
     xmlns:imageCropper="using:Naylah.Toolkit.UWP.Controls.ImageCropper"
 
-    xmlns:converters="using:Naylah.Toolkit.UWP.Converter"
+    xmlns:converters="using:Naylah.Toolkit.UWP.Converters"
 
     mc:Ignorable="d"
     d:DesignHeight="711"

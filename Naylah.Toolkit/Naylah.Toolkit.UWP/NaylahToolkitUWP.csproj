@@ -108,6 +108,10 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Behaviors\ImagePlaceholderBehavior.cs" />
+    <Compile Include="Controls\Behaviors\MultiSelectBehavior.cs" />
+    <Compile Include="Controls\Behaviors\NumericTextBoxBehavior.cs" />
+    <Compile Include="Controls\Behaviors\TransparentTextBoxBehavior.cs" />
     <Compile Include="Controls\AppVersion\AppVersionShellFrame.xaml.cs">
       <DependentUpon>AppVersionShellFrame.xaml</DependentUpon>
     </Compile>
@@ -121,6 +125,12 @@
     </Compile>
     <Compile Include="Controls\ImageCropper\ImageCropper.cs" />
     <Compile Include="Controls\SideBar\SideBar.cs" />
+    <Compile Include="Controls\Style\CharactersFontPicker.xaml.cs">
+      <DependentUpon>CharactersFontPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Style\ColorsPicker.xaml.cs">
+      <DependentUpon>ColorsPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\AnythingToVisibilityConverter.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\CharCaseConverter.cs" />
@@ -141,8 +151,10 @@
     <Compile Include="Converters\ValueConverterGroup.cs" />
     <Compile Include="Extensions\ImageCropperExtensions.cs" />
     <Compile Include="Helpers\ApplicationHelper.cs" />
+    <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="Helpers\DataHelper.cs" />
     <Compile Include="Helpers\LanguageResources.cs" />
+    <Compile Include="Helpers\Mdls2Helper.cs" />
     <Compile Include="Helpers\NetworkHelper.cs" />
     <Compile Include="Helpers\XamlHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -170,6 +182,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="Controls\Style\CharactersFontPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Style\ColorsPicker.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>

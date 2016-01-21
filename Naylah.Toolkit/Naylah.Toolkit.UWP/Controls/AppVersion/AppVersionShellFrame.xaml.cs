@@ -113,7 +113,7 @@ namespace Naylah.Toolkit.UWP.Controls.AppVersion
                         break;
                     case AppBuildType.Prod:
                         TypeDescription = (string)Resources["descProd"];
-
+                        this.Visibility = Visibility.Collapsed;
                         break;
                     default:
                         break;

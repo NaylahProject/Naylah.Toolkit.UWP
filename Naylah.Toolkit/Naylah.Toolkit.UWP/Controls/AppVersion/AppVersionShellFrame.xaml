@@ -17,7 +17,7 @@
         <x:String x:Key="descDev">Developer copy (confidential)</x:String>
         <x:String x:Key="descTest">Test copy (confidential)</x:String>
         <x:String x:Key="descStagging">Preview copy (confidential)</x:String>
-        <x:String x:Key="descProd"> </x:String>
+        <x:String x:Key="descProd">Prod </x:String>
     </UserControl.Resources>
     
     <Grid
