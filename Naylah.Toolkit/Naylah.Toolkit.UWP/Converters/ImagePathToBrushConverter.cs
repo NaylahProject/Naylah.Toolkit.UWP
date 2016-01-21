@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
     public class ImagePathToBrushConverter : IValueConverter
     {

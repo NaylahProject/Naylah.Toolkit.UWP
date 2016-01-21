@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
     public class NumericValueConverter : IValueConverter
     {
@@ -14,7 +14,15 @@ namespace Naylah.Toolkit.UWP.Converter
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return value.ToString();
+            try
+            {
+                return value.ToString();
+            }
+            catch (Exception)
+            {
+                return value;
+            }
+
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

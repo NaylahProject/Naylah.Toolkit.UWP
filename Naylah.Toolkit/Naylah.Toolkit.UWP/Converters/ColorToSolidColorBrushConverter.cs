@@ -7,7 +7,7 @@ using Windows.UI;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
     public class ColorToSolidColorBrushConverter : IValueConverter
     {

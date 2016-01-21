@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
-
     /// <summary>
     /// Converts a Boolean into a Visibility.
     /// </summary>
-    public class InverseBooleanConverter : IValueConverter
+    public class BooleanToVisibilityConverter : IValueConverter
     {
         /// <summary>
         /// If set to True, conversion is reversed: True will become Collapsed.
@@ -20,19 +20,18 @@ namespace Naylah.Toolkit.UWP.Converter
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-
-            try
+            var val = System.Convert.ToBoolean(value);
+            if (this.IsReversed)
             {
-                if (targetType != typeof(bool))
-                    throw new InvalidOperationException("The target must be a boolean");
+                val = !val;
+            }
 
-                return !(bool)value;
-            }
-            catch (Exception e)
+            if (val)
             {
-                return value;
+                return Visibility.Visible;
             }
-           
+
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
-    /// <summary>
-    /// Converts a null value to Visibility.Visible and any other value to Visibility.Collapsed
-    /// </summary>
-    public class NullToVisibilityConverter : IValueConverter
+    public class StringEmptyOrNullVisibilityConverter : IValueConverter
     {
 
         public bool IsReversed { get; set; }
@@ -28,7 +25,9 @@ namespace Naylah.Toolkit.UWP.Converter
         /// </returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var flag = value == null;
+            var v = (string)value;
+
+            var flag = string.IsNullOrEmpty(v);
 
             if (IsReversed)
             {

@@ -11,7 +11,7 @@ using System.Windows.Data;
 using System.Windows;
 #endif
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
     /// <summary>
     /// Converts anything to inverse visibility

@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
-    public class StringIsNullOrEmptyToBoolConverter : IValueConverter
+    public class ListEmptyToVisibilityConverter : IValueConverter
     {
 
         public bool IsReversed { get; set; }
@@ -22,20 +26,19 @@ namespace Naylah.Toolkit.UWP.Converter
         /// </returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var v = (string)value;
+            if (value is IList)
+            {
+                var result = value as IList;
+                var test = result.Count != 0;
+                if (!IsReversed)
+                {
+                    test = !test;
+                }
+                return test ? Visibility.Visible : Visibility.Collapsed;
+            }
 
-            var flag = string.IsNullOrEmpty(v);
+            return Visibility.Collapsed;
 
-            return flag & !IsReversed;
-
-            //if (IsReversed)
-            //{
-            //    return (flag ? Visibility.Collapsed : Visibility.Visible);
-            //}
-            //else
-            //{
-            //    return (flag ? Visibility.Visible : Visibility.Collapsed);
-            //}
         }
 
         /// <summary>

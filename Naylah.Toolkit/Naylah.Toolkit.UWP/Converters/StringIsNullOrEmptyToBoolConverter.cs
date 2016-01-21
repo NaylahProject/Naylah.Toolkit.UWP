@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
-    public class StringEmptyOrNullVisibilityConverter : IValueConverter
+    public class StringIsNullOrEmptyToBoolConverter : IValueConverter
     {
 
         public bool IsReversed { get; set; }
@@ -29,14 +26,16 @@ namespace Naylah.Toolkit.UWP.Converter
 
             var flag = string.IsNullOrEmpty(v);
 
-            if (IsReversed)
-            {
-                return (flag ? Visibility.Collapsed : Visibility.Visible);
-            }
-            else
-            {
-                return (flag ? Visibility.Visible : Visibility.Collapsed);
-            }
+            return flag & !IsReversed;
+
+            //if (IsReversed)
+            //{
+            //    return (flag ? Visibility.Collapsed : Visibility.Visible);
+            //}
+            //else
+            //{
+            //    return (flag ? Visibility.Visible : Visibility.Collapsed);
+            //}
         }
 
         /// <summary>

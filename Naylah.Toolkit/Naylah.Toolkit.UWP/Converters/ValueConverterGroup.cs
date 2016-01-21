@@ -5,33 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
-    public class RelativeDistanceConverter : IValueConverter
+    public class ValueConverterGroup : List<IValueConverter>, IValueConverter
     {
-
-
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-
-            try
-            {
-                var val = System.Convert.ToDouble(value);
-
-                return Math.Round((val / 1000), 2).ToString() + " KMs";
-            }
-            catch (Exception)
-            {
-                return "";
-
-            }
-
-
+            return this.Aggregate(value, (current, converter) => converter.Convert(current, targetType, parameter, language));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
         {
             throw new NotImplementedException();
         }
+
     }
 }

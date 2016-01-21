@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +6,12 @@ using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
-    public class ListEmptyToVisibilityConverter : IValueConverter
+    /// <summary>
+    /// Converts a null value to Visibility.Visible and any other value to Visibility.Collapsed
+    /// </summary>
+    public class NullToVisibilityConverter : IValueConverter
     {
 
         public bool IsReversed { get; set; }
@@ -26,19 +28,16 @@ namespace Naylah.Toolkit.UWP.Converter
         /// </returns>
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is IList)
+            var flag = value == null;
+
+            if (IsReversed)
             {
-                var result = value as IList;
-                var test = result.Count != 0;
-                if (!IsReversed)
-                {
-                    test = !test;
-                }
-                return test ? Visibility.Visible : Visibility.Collapsed;
+                return (flag ? Visibility.Collapsed : Visibility.Visible);
             }
-
-            return Visibility.Collapsed;
-
+            else
+            {
+                return (flag ? Visibility.Visible : Visibility.Collapsed);
+            }
         }
 
         /// <summary>

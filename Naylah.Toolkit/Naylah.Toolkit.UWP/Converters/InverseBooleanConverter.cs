@@ -1,39 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.UI.Xaml.Data;
 
-namespace Naylah.Toolkit.UWP.Converter
+namespace Naylah.Toolkit.UWP.Converters
 {
-    public class CharCaseConverter : IValueConverter
+
+    /// <summary>
+    /// Converts a Boolean into a Visibility.
+    /// </summary>
+    public class InverseBooleanConverter : IValueConverter
     {
         /// <summary>
         /// If set to True, conversion is reversed: True will become Collapsed.
         /// </summary>
-        public bool Upper { get; set; }
+        public bool IsReversed { get; set; }
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
 
             try
             {
-                var val = System.Convert.ToString(value);
+                if (targetType != typeof(bool))
+                    throw new InvalidOperationException("The target must be a boolean");
 
-                if (this.Upper)
-                {
-                    return val.ToUpper();
-                }
-                else
-                {
-                    return val.ToLower();
-                }
+                return !(bool)value;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return "";
+                return value;
             }
-
-
+           
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
