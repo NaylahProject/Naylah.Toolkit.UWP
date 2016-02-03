@@ -1,7 +1,7 @@
 # Naylah Toolkit for Universal Windows Plataform
 Naylah UWP it's a SDK for Universal Windows Plataform. 
 
-[![NuGet](https://img.shields.io/nuget/dt/Microsoft.AspNet.Mvc.svg?style=flat-square)](https://www.nuget.org/packages/Naylah.Toolkit.UWP/)
+[![NuGet](https://img.shields.io/nuget/dt/Naylah.Toolkit.UWP.svg?style=flat-square)](https://www.nuget.org/packages/Naylah.Toolkit.UWP/)
 [![Build status](https://ci.appveyor.com/api/projects/status/6ts40ompha6n13a1?svg=true&failingText=oh no)](https://ci.appveyor.com/project/daemun/naylah-uwp)
 
 
