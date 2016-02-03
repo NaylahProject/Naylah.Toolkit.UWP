@@ -31,7 +31,7 @@
 
             <interactivity:Interaction.Behaviors>
                 <behaviors:NumericTextBoxBehavior
-                    Type="Integer"
+                    Type="Double"
                     NumericValue="{Binding MyDoubleValue, Mode=TwoWay}"
                     >
                     

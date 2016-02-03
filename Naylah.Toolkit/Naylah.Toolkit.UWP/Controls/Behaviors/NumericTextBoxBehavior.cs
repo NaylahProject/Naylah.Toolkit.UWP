@@ -39,8 +39,17 @@ namespace Naylah.Toolkit.UWP.Behaviors
 
         public void SetTexts()
         {
-            AssociatedObjectAsTextBox.Text = NumericValue.ToString();
-            AssociatedObjectAsTextBox.SelectionStart = AssociatedObjectAsTextBox.Text.Length;
+            try
+            {
+                Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+                    AssociatedObjectAsTextBox.Text = NumericValue.ToString();
+                    AssociatedObjectAsTextBox.SelectionStart = AssociatedObjectAsTextBox.Text.Length;
+                });
+            }
+            catch (Exception)
+            {
+            }
+            
         }
 
         public NumericTextBoxBehaviorType Type
@@ -81,7 +90,7 @@ namespace Naylah.Toolkit.UWP.Behaviors
 
 
 
-        public virtual void TbOnTextChanging(object sender, TextBoxTextChangingEventArgs e)
+        public virtual async void TbOnTextChanging(object sender, TextBoxTextChangingEventArgs e)
         {
 
             if (AssociatedObjectAsTextBox == null)
