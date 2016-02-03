@@ -137,13 +137,15 @@ namespace Naylah.Toolkit.UWP.Behaviors
 
                 }
 
+                SetTexts();
+
             }
             catch (Exception)
             {
             }
             finally
             {
-                SetTexts();
+                
                 AssociatedObjectAsTextBox.TextChanging += TbOnTextChanging;
             }
 
