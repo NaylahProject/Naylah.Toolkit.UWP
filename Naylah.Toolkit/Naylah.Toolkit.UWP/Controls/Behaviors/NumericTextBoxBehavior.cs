@@ -157,9 +157,7 @@ namespace Naylah.Toolkit.UWP.Behaviors
         }
 
 
-        /// 
-        /// Detaches the behavior from the TextBox.
-        /// 
+  
         public void Detach()
         {
             TextBox tb = AssociatedObject as TextBox;
@@ -169,9 +167,7 @@ namespace Naylah.Toolkit.UWP.Behaviors
             }
         }
 
-        /// 
-        /// The associated object (TextBox).
-        /// 
+
         public DependencyObject AssociatedObject { get; private set; }
         public TextBox AssociatedObjectAsTextBox { get; private set; }
     }
