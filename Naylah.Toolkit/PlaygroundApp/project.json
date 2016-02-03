@@ -1,6 +1,8 @@
 ﻿{
   "dependencies": {
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
+    "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.0.3",
+    "MvvmLightLibs": "5.2.0",
     "WindowsAzure.Storage": "6.2.2-preview"
   },
   "frameworks": {

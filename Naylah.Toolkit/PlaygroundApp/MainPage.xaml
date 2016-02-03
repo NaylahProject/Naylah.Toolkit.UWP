@@ -8,7 +8,12 @@
     mc:Ignorable="d"
 
     xmlns:ImageChooser="using:Naylah.Toolkit.UWP.Controls.ImageChooser"
-    xmlns:AppVersion="using:Naylah.Toolkit.UWP.Controls.AppVersion">
+    xmlns:AppVersion="using:Naylah.Toolkit.UWP.Controls.AppVersion"
+    
+    xmlns:behaviors="using:Naylah.Toolkit.UWP.Behaviors"
+    
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    >
 
     <Grid
         x:Name="gdPageContent"
@@ -20,32 +25,45 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
-        <Image
-            x:Name="t"
-            Grid.Row="0"
+        <TextBox
+            x:Name="hue"
             >
+
+            <interactivity:Interaction.Behaviors>
+                <behaviors:NumericTextBoxBehavior
+                    Type="Integer"
+                    NumericValue="{Binding MyDoubleValue, Mode=TwoWay}"
+                    >
+                    
+                </behaviors:NumericTextBoxBehavior>
+            </interactivity:Interaction.Behaviors>
             
-        </Image>
+        </TextBox>
+
+        <StackPanel
+            Grid.Row="1">
+
+            <Button
+            
+            Content="Brasil"
+                Click="Button_Click">
+
+            </Button>
+
+            <Button
+            
+            Content="Eua" Click="Button_Click_1">
+
+            </Button>
+
+            <TextBlock
+                x:Name="hue2"
+                Text="{Binding MyDoubleValue}"
+                ></TextBlock>
+
+
+        </StackPanel>
         
-        <ImageChooser:ImageChooser
-            Grid.Row="1"
-            x:Name="imageCropper"
-            TopCommandBarBackground="Pink"
-            TopCommandBarForeground="Red"
-            BottomCommandBarBackground="Orange"
-            BottomCommandBarForeground="DarkBlue"
-            
-            
-            >
-        </ImageChooser:ImageChooser>
-
-
-        <AppVersion:AppVersionShellFrame 
-            AppName="App name sample" 
-            Type="Dev"
-            
-            >
-        </AppVersion:AppVersionShellFrame>
 
     </Grid>
 </Page>

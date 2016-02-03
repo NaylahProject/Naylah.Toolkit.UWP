@@ -111,6 +111,7 @@
     <Compile Include="Controls\Behaviors\ImagePlaceholderBehavior.cs" />
     <Compile Include="Controls\Behaviors\MultiSelectBehavior.cs" />
     <Compile Include="Controls\Behaviors\NumericTextBoxBehavior.cs" />
+    <Compile Include="Controls\Behaviors\RegexTextBoxBehavior.cs" />
     <Compile Include="Controls\Behaviors\TransparentTextBoxBehavior.cs" />
     <Compile Include="Controls\AppVersion\AppVersionShellFrame.xaml.cs">
       <DependentUpon>AppVersionShellFrame.xaml</DependentUpon>

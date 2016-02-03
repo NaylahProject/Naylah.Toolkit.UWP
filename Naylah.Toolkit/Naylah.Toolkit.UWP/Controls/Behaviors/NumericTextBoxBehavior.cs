@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -10,47 +11,58 @@ using Windows.UI.Xaml.Input;
 
 namespace Naylah.Toolkit.UWP.Behaviors
 {
-    /// 
-    /// Simple NumericTextBox behavior for Windows Universal
-    /// 
-    public sealed class NumericTextBoxBehavior
-         : DependencyObject, IBehavior
+    public class NumericTextBoxBehavior : DependencyObject, IBehavior
     {
-        /// 
-        /// Track the last valid text value.
-        /// 
-        private string _lastText;
 
-        /// 
-        /// Backing storage for the AllowDecimal property
-        /// 
-        public static readonly DependencyProperty AllowDecimalProperty = DependencyProperty.Register(
-            "AllowDecimal",
-            typeof(bool),
-            typeof(NumericTextBoxBehavior),
-            new PropertyMetadata(false));
-
-        /// 
-        /// True to allow a decimal point.
-        /// 
-        public bool AllowDecimal
+        public enum NumericTextBoxBehaviorType
         {
-            get
-            {
-                return (bool)base.GetValue(AllowDecimalProperty);
-            }
-
-            set
-            {
-                base.SetValue(AllowDecimalProperty, value);
-            }
+            Integer,
+            Double,
         }
 
-        /// 
-        /// Used to attach this behavior to an element.
-        /// Must be a TextBox.
-        /// 
-        ///TextBox to assocate this behavior with.
+
+        public double NumericValue
+        {
+            get { return (double)GetValue(NumericDecimalValueProperty); }
+            set { SetValue(NumericDecimalValueProperty, value); }
+        }
+
+        public static readonly DependencyProperty NumericDecimalValueProperty =
+            DependencyProperty.Register("NumericValue", typeof(double), typeof(NumericTextBoxBehavior), new PropertyMetadata(default(double), NumericValueChangedCallback));
+
+        private static void NumericValueChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var behavior = (NumericTextBoxBehavior)d;
+            behavior.SetTexts();
+
+        }
+
+        public void SetTexts()
+        {
+            AssociatedObjectAsTextBox.Text = NumericValue.ToString();
+            AssociatedObjectAsTextBox.SelectionStart = AssociatedObjectAsTextBox.Text.Length;
+        }
+
+        public NumericTextBoxBehaviorType Type
+        {
+            get { return (NumericTextBoxBehaviorType)GetValue(TypeProperty); }
+            set { SetValue(TypeProperty, value); }
+        }
+
+        public static readonly DependencyProperty TypeProperty =
+            DependencyProperty.Register("Type", typeof(NumericTextBoxBehaviorType), typeof(NumericTextBoxBehavior), new PropertyMetadata(NumericTextBoxBehaviorType.Integer));
+
+
+
+
+
+
+
+
+
+
+
+
         public void Attach(DependencyObject associatedObject)
         {
             TextBox tb = associatedObject as TextBox;
@@ -60,63 +72,90 @@ namespace Naylah.Toolkit.UWP.Behaviors
             }
 
             AssociatedObject = associatedObject;
+            AssociatedObjectAsTextBox = tb;
 
-            _lastText = tb.Text;
+            AssociatedObjectAsTextBox.Loaded += (s, e) => { TbOnTextChanging(s, null); };
 
-            tb.Loaded += (s, e) => { _lastText = ((TextBox)s).Text; };
-            tb.TextChanged += TbOnTextChanged;
-            if (tb.InputScope == null)
-            {
-                var inputScope = new InputScope();
-                inputScope.Names.Add(new InputScopeName(InputScopeNameValue.Number));
-                tb.InputScope = inputScope;
-            }
+
         }
 
 
-        /// 
-        /// Handles the TextChanged event on the TextBox and watches for
-        /// numeric entries.
-        /// 
-        ///
-        ///
-        private void TbOnTextChanged(object sender, TextChangedEventArgs e)
+
+        public virtual void TbOnTextChanging(object sender, TextBoxTextChangingEventArgs e)
         {
 
-            TextBox tb = AssociatedObject as TextBox;
+            if (AssociatedObjectAsTextBox == null)
+            {
+                return;
+            }
 
-            if (tb != null)
+            try
             {
 
-                tb.Text = tb.Text.Replace(System.Globalization.CultureInfo.InvariantCulture.NumberFormat.NumberGroupSeparator, System.Globalization.CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator);
-                tb.SelectionStart = tb.Text.Length;
+                AssociatedObjectAsTextBox.TextChanging -= TbOnTextChanging;
 
-                if (AllowDecimal)
+                if (string.IsNullOrEmpty(AssociatedObjectAsTextBox.Text))
                 {
-                    double value = 0;
-
-                    if (string.IsNullOrEmpty(tb.Text) || Double.TryParse(tb.Text, out value))
-                    {
-                        _lastText = tb.Text;
-                        return;
-                    }
-
-                }
-                else
-                {
-                    long value;
-                    if (string.IsNullOrEmpty(tb.Text) ||
-                        long.TryParse(tb.Text, out value))
-                    {
-                        _lastText = tb.Text;
-                        return;
-                    }
+                    NumericValue = 0;
                 }
 
-                tb.Text = _lastText;
-                tb.SelectionStart = tb.Text.Length;
+                switch (Type)
+                {
+
+                    case NumericTextBoxBehaviorType.Integer:
+                        {
+                            int numericValue = 0;
+                            if (int.TryParse(AssociatedObjectAsTextBox.Text, out numericValue))
+                            {
+                                if (IsNumberRegexValid(numericValue.ToString()))
+                                {
+                                    NumericValue = numericValue;
+                                }
+                            }
+                        }
+                        break;
+
+                    case NumericTextBoxBehaviorType.Double:
+                        {
+                            var decimalsSeparators = new char[] { '.', ',' };
+
+                            if (decimalsSeparators.Contains(AssociatedObjectAsTextBox.Text[AssociatedObjectAsTextBox.Text.Length - 1]) && AssociatedObjectAsTextBox.Text.Where(x => decimalsSeparators.Contains(x)).Count() == 1)
+                            {
+                                return;
+                            }
+
+                            double numericValue = 0;
+                            if (double.TryParse(AssociatedObjectAsTextBox.Text, out numericValue))
+                            {
+                                if (IsNumberRegexValid(numericValue.ToString()))
+                                {
+                                    NumericValue = numericValue;
+                                }
+                            }
+                        }
+                        break;
+
+                }
+
             }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                SetTexts();
+                AssociatedObjectAsTextBox.TextChanging += TbOnTextChanging;
+            }
+
+
+
         }
+
+        public static bool IsNumberRegexValid(string numberAsString)
+        {
+            return Regex.IsMatch(numberAsString, @"^[1-9][\.\d]*(,\d+)?$");
+        }
+
 
         /// 
         /// Detaches the behavior from the TextBox.
@@ -126,7 +165,7 @@ namespace Naylah.Toolkit.UWP.Behaviors
             TextBox tb = AssociatedObject as TextBox;
             if (tb != null)
             {
-                tb.TextChanged -= this.TbOnTextChanged;
+                tb.TextChanging -= this.TbOnTextChanging;
             }
         }
 
@@ -134,5 +173,6 @@ namespace Naylah.Toolkit.UWP.Behaviors
         /// The associated object (TextBox).
         /// 
         public DependencyObject AssociatedObject { get; private set; }
+        public TextBox AssociatedObjectAsTextBox { get; private set; }
     }
 }
