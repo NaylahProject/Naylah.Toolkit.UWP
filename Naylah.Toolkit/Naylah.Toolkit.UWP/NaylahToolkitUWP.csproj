@@ -153,7 +153,6 @@
     <Compile Include="Converters\StringIsNullOrEmptyToBoolConverter.cs" />
     <Compile Include="Converters\TimeSpanToUTCTimeSpanConverter.cs" />
     <Compile Include="Converters\ValueConverterGroup.cs" />
-    <Compile Include="Extensions\Collections\ObservableItemCollection.cs" />
     <Compile Include="Extensions\ImageCropperExtensions.cs" />
     <Compile Include="Helpers\ApplicationHelper.cs" />
     <Compile Include="Helpers\ColorHelper.cs" />
