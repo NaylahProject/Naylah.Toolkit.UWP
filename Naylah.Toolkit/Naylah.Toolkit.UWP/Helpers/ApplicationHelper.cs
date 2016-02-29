@@ -8,6 +8,7 @@ namespace Naylah.Toolkit.UWP.Helpers
 {
     public static class ApplicationHelper
     {
+
         public static bool DesignModeEnabled { get { return Windows.ApplicationModel.DesignMode.DesignModeEnabled; } }
     }
 }
