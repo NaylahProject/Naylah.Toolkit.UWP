@@ -1,5 +1,7 @@
 ﻿<Page
     x:Class="PlaygroundApp.MainPage"
+    DataContext="{Binding MainVM, Source={StaticResource VMLocator}}"
+    
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:PlaygroundApp"
@@ -13,6 +15,11 @@
     xmlns:behaviors="using:Naylah.Toolkit.UWP.Behaviors"
     
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    
+    xmlns:bladeControls="using:Naylah.Toolkit.UWP.Controls.Blade"
+    
+    xmlns:blades="using:PlaygroundApp.Blades"
+    
     >
 
     <Grid
@@ -20,49 +27,107 @@
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
         >
 
-        <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
+        
+        <bladeControls:BladeStack>
 
-        <TextBox
-            x:Name="hue"
-            >
+            <bladeControls:BladeStack.Blades>
 
-            <interactivity:Interaction.Behaviors>
-                <behaviors:NumericTextBoxBehavior
-                    Type="Double"
-                    NumericValue="{Binding MyDoubleValue, Mode=TwoWay}"
+                <bladeControls:Blade
+                    IsBladeActive="True"
+                    BladeWidth="300"
+                    Background="SlateBlue"
                     >
+
+                    <Grid>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+
+                        <Grid
+                            Grid.Row="0"
+                            >
+
+                            <StackPanel
+                                Margin="0,20,0,20"
+                                HorizontalAlignment="Center"
+                                Tapped="StackPanel_Tapped"
+                                >
+                                <Image
+                                    Source="../Assets/NaylahLogo.png"
+                                    Width="130"
+                                    Height="130"
+                                    >
+                                    
+                                </Image>
+
+                                <TextBlock
+                                    Text="Naylah App Playground"
+                                    Foreground="White"
+                                    Style="{StaticResource SubheaderTextBlockStyle}"
+                                    TextAlignment="Center"
+                                    FontSize="24"
+                                    IsTapEnabled="{Binding ImageChooserJourney}"
+                                    >
+                                    
+                                </TextBlock>
+                                
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid
+                            Grid.Row="1"
+                            >
+
+                            <ListView
+                                ItemsSource="{Binding MenuItemsList}"
+                                Padding="20"
+                                IsItemClickEnabled="True"
+                                ItemClick="ListView_ItemClick"
+                                >
+
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            Text="{Binding}"
+                                            Foreground="White"
+                                            Style="{StaticResource SubheaderTextBlockStyle}"
+                                            FontSize="20"
+                                            />
+
+
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                            
+                        </Grid>
+                            
+                       
+                        
+                        
+                    </Grid>
+
+                </bladeControls:Blade>
+                
+                <blades:ImageChooserBlade
+                    Background="Gray"
                     
-                </behaviors:NumericTextBoxBehavior>
-            </interactivity:Interaction.Behaviors>
+                    IsBladeActive="{Binding ImageChooserJourney}"
+                    BladeWidth="600"
+                >
+
+                </blades:ImageChooserBlade>
+                
+            </bladeControls:BladeStack.Blades>
+
+           
             
-        </TextBox>
+           
 
-        <StackPanel
-            Grid.Row="1">
+        </bladeControls:BladeStack>
 
-            <Button
-            
-            Content="Brasil"
-                Click="Button_Click">
-
-            </Button>
-
-            <Button
-            
-            Content="Eua" Click="Button_Click_1">
-
-            </Button>
-
-            <TextBlock
-                x:Name="hue2"
-                Text="{Binding MyDoubleValue}"
-                ></TextBlock>
-
-
-        </StackPanel>
         
 
     </Grid>

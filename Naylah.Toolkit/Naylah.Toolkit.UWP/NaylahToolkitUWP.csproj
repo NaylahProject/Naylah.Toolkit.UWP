@@ -109,14 +109,16 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\Behaviors\ImagePlaceholderBehavior.cs" />
-    <Compile Include="Controls\Behaviors\MultiSelectBehavior.cs" />
-    <Compile Include="Controls\Behaviors\NumericTextBoxBehavior.cs" />
-    <Compile Include="Controls\Behaviors\RegexTextBoxBehavior.cs" />
-    <Compile Include="Controls\Behaviors\TransparentTextBoxBehavior.cs" />
+    <Compile Include="Behaviors\ImagePlaceholderBehavior.cs" />
+    <Compile Include="Behaviors\MultiSelectBehavior.cs" />
+    <Compile Include="Behaviors\NumericTextBoxBehavior.cs" />
+    <Compile Include="Behaviors\RegexTextBoxBehavior.cs" />
+    <Compile Include="Behaviors\TransparentTextBoxBehavior.cs" />
     <Compile Include="Controls\AppVersion\AppVersionShellFrame.xaml.cs">
       <DependentUpon>AppVersionShellFrame.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\Blade\Blade.cs" />
+    <Compile Include="Controls\Blade\BladeStack.cs" />
     <Compile Include="Controls\CircularSlider\CircularSliderControl.cs" />
     <Compile Include="Controls\CircularSlider\IGeometryHelper.cs" />
     <Compile Include="Controls\CircularSlider\IMathHelper.cs" />
@@ -151,6 +153,7 @@
     <Compile Include="Converters\StringIsNullOrEmptyToBoolConverter.cs" />
     <Compile Include="Converters\TimeSpanToUTCTimeSpanConverter.cs" />
     <Compile Include="Converters\ValueConverterGroup.cs" />
+    <Compile Include="Extensions\Collections\ObservableItemCollection.cs" />
     <Compile Include="Extensions\ImageCropperExtensions.cs" />
     <Compile Include="Helpers\ApplicationHelper.cs" />
     <Compile Include="Helpers\ColorHelper.cs" />
