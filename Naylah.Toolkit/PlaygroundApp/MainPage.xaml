@@ -25,10 +25,11 @@
     <Grid
         x:Name="gdPageContent"
         Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+        
         >
 
-        
-        <bladeControls:BladeStack>
+        <bladeControls:BladeStack
+            >
 
             <bladeControls:BladeStack.Blades>
 
@@ -113,7 +114,6 @@
                 
                 <blades:ImageChooserBlade
                     Background="Gray"
-                    
                     IsBladeActive="{Binding ImageChooserJourney}"
                     BladeWidth="600"
                 >
@@ -128,7 +128,14 @@
 
         </bladeControls:BladeStack>
 
-        
+        <Button
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="20"
+            Content="Navigate To Another Page"
+            Click="Button_Click">
+            
+        </Button>
 
     </Grid>
 </Page>

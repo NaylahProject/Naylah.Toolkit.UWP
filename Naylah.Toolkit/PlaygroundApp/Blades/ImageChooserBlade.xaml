@@ -1,6 +1,8 @@
 ﻿<bladeControls:Blade 
     xmlns:ImageChooser="using:Naylah.Toolkit.UWP.Controls.ImageChooser" 
     x:Class="PlaygroundApp.Blades.ImageChooserBlade"
+
+    
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:PlaygroundApp.Blades"

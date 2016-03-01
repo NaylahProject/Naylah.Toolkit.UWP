@@ -25,11 +25,18 @@ namespace PlaygroundApp.ViewModels
             //}
 
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<AnotherViewModel>();
+
         }
 
         public MainViewModel MainVM
         {
             get { return SimpleIoc.Default.GetInstance<MainViewModel>(); }
+        }
+
+        public AnotherViewModel AnotherVM
+        {
+            get { return SimpleIoc.Default.GetInstance<AnotherViewModel>(); }
         }
     }
 }

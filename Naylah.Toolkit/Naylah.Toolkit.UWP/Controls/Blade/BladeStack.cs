@@ -1,5 +1,4 @@
-﻿using Naylah.Toolkit.UWP.Extensions.Collections;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,14 +10,53 @@ using WinRTXamlToolkit.Tools;
 
 namespace Naylah.Toolkit.UWP.Controls.Blade
 {
+
+    // "Shoud be refrac" - Yes i know 
     public class BladeStack : ContentControl
     {
+       
+        // Public for customization etc :P
+        // Like for example a pull to refresh in horizontal =O
+        public ScrollViewer ScrollViewer { get; private set; }
 
-        private ScrollViewer scrollViewer;
-        private StackPanel stackPanel;
+        public StackPanel StackPanel { get; private set; }
+
+        private bool isBusy;
+        private bool isLoaded;
 
 
-        public BladeMode Mode
+
+
+        public BladeStackChangeType BladeStackChangeType
+        {
+            get { return (BladeStackChangeType)GetValue(BladeStackChangeTypeProperty); }
+            set { SetValue(BladeStackChangeTypeProperty, value); }
+        }
+
+        public static readonly DependencyProperty BladeStackChangeTypeProperty =
+            DependencyProperty.Register("BladeStackChangeType", typeof(BladeStackChangeType), typeof(BladeStack), new PropertyMetadata(BladeStackChangeType.BladeStackMinWidth, BladeStackChangeTypeChangedCallback));
+
+        private static void BladeStackChangeTypeChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            
+        }
+
+        public double BladeStackChangeMinWidth
+        {
+            get { return (double)GetValue(BladeStackChangeMinWidthProperty); }
+            set { SetValue(BladeStackChangeMinWidthProperty, value); }
+        }
+
+        public static readonly DependencyProperty BladeStackChangeMinWidthProperty =
+            DependencyProperty.Register("BladeStackChangeMinWidth", typeof(double), typeof(BladeStack), new PropertyMetadata((double)500, BladeStackMinWidthChangedCallback));
+
+
+        private static void BladeStackMinWidthChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            
+        }
+
+        public BladeMode BladeMode
         {
             get { return (BladeMode)GetValue(ModeProperty); }
             set { SetValue(ModeProperty, value); }
@@ -50,7 +88,7 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
 
         public static readonly DependencyProperty BladesProperty =
             DependencyProperty.Register("Blades", typeof(ObservableCollection<Blade>), typeof(BladeStack), new PropertyMetadata(default(ObservableCollection<Blade>), BladesChangedCallback));
-
+        
 
         private static void BladesChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -69,6 +107,8 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
             Blades = new ObservableCollection<Blade>();
             Blades.CollectionChanged += Blades_CollectionChanged;
 
+            Loaded += BladeStack_Loaded;
+
             SizeChanged += BladeStack_SizeChanged;
 
             // This is a trick... When u manipulate elements in code-behind, Parent will not work to get DataContext
@@ -76,28 +116,38 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
             DataContextChanged += BladeStack_DataContextChanged;
         }
 
+        private void BladeStack_Loaded(object sender, RoutedEventArgs e)
+        {
+            isLoaded = true;
+
+            UpdateBladeStackView();
+        }
+
         private void BladeStack_DataContextChanged(FrameworkElement sender, DataContextChangedEventArgs args)
         {
-            if (scrollViewer != null)
+            if (ScrollViewer != null)
             {
-                scrollViewer.DataContext = sender.DataContext;
+                ScrollViewer.DataContext = sender.DataContext;
             }
 
-            if (stackPanel != null)
+            if (StackPanel != null)
             {
-                stackPanel.DataContext = sender.DataContext;
+                StackPanel.DataContext = sender.DataContext;
             }
 
             if (Blades != null)
             {
 
-                Blades.ForEach(
-                            x =>
-                            {
-                                x.DataContext = sender.DataContext;
-                            }
+                Blades.ForEach(x =>
+                    {
+                        if (x.DataContext == null)
+                        {
+                            x.DataContext = this.DataContext;
+                        }
+                    }
 
-                            );
+                );
+
             }
         }
 
@@ -115,13 +165,18 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
         {
             FocusLastBlade();
 
-            if (e.NewSize.Width <= 500)
+            if (BladeStackChangeType == BladeStackChangeType.Manual)
             {
-                Mode = BladeMode.BladeContent;
+                return;
+            }
+
+            if (e.NewSize.Width <= BladeStackChangeMinWidth)
+            {
+                BladeMode = BladeMode.BladeContent;
             }
             else
             {
-                Mode = BladeMode.BladeStack;
+                BladeMode = BladeMode.BladeStack;
             }
         }
 
@@ -139,7 +194,6 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
                         {
                             x.CurrentBladeStack = this;
                         }
-
                         );
                 }
 
@@ -154,13 +208,13 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
 
         private void ConfigureStackPanel()
         {
-            if (stackPanel == null)
+            if (StackPanel == null)
             {
-                stackPanel = new StackPanel();
+                StackPanel = new StackPanel();
             }
 
-            stackPanel.Orientation = Orientation.Horizontal;
-            stackPanel.SizeChanged += StackPanel_SizeChanged;
+            StackPanel.Orientation = Orientation.Horizontal;
+            StackPanel.SizeChanged += StackPanel_SizeChanged;
         }
 
         private void StackPanel_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -170,17 +224,17 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
 
         private void ConfigureScrollViewer()
         {
-            if (scrollViewer == null)
+            if (ScrollViewer == null)
             {
-                scrollViewer = new ScrollViewer();
+                ScrollViewer = new ScrollViewer();
             }
 
-            scrollViewer.HorizontalAlignment = HorizontalAlignment.Stretch;
-            scrollViewer.VerticalAlignment = VerticalAlignment.Stretch;
-            scrollViewer.HorizontalScrollMode = ScrollMode.Enabled;
-            scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Visible;
-            scrollViewer.VerticalScrollMode = ScrollMode.Disabled;
-            scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+            ScrollViewer.HorizontalAlignment = HorizontalAlignment.Stretch;
+            ScrollViewer.VerticalAlignment = VerticalAlignment.Stretch;
+            ScrollViewer.HorizontalScrollMode = ScrollMode.Enabled;
+            ScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+            ScrollViewer.VerticalScrollMode = ScrollMode.Disabled;
+            ScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
 
         }
 
@@ -188,62 +242,102 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
         public void UpdateBladeStackView()
         {
 
-            stackPanel.Children.Clear();
-            scrollViewer.Content = null;
-            Content = null;
-
-            switch (Mode)
+            try
             {
-                case BladeMode.BladeStack:
+                if (isBusy)
+                {
+                    return;
+                }
 
-                    var activeBlades = Blades.Where(x => x.IsBladeActive);
-                    activeBlades.ForEach(x => x.Width = x.BladeWidth);
+                if (!isLoaded)
+                {
+                    return;
+                }
 
-                    activeBlades.ForEach(x => stackPanel.Children.Add(x));
+                isBusy = true;
 
-                    scrollViewer.Content = stackPanel;
+                StackPanel.Children.Clear();
+                ScrollViewer.Content = null;
+                Content = null;
 
-                    Content = scrollViewer;
+                
 
-                    break;
+                switch (BladeMode)
+                {
+                    case BladeMode.BladeStack:
 
-                case BladeMode.BladeContent:
+                        var activeBlades = Blades.Where(x => x.IsBladeActive);
 
-                    var lastActiveBlade = Blades.Where(x => x.IsBladeActive).LastOrDefault();
+                        activeBlades.ForEach(
+                            x =>
+                            {
 
-                    if (lastActiveBlade == null)
-                    {
-                        return;
-                    }
+                                if ((x.BladeWidth == 0) || (double.IsNaN(x.BladeWidth)))
+                                {
+                                    x.BladeWidth = BladeStackChangeMinWidth;
+                                }
 
-                    lastActiveBlade.Width = double.NaN;
-                    lastActiveBlade.HorizontalAlignment = HorizontalAlignment.Stretch;
-                    lastActiveBlade.VerticalAlignment = VerticalAlignment.Stretch;
+                                x.Width = x.BladeWidth;
 
-                    Content = lastActiveBlade;
+                                StackPanel.Children.Add(x);
+                            }
+                            );
 
-                    break;
+
+                        ScrollViewer.Content = StackPanel;
+
+                        Content = ScrollViewer;
+
+                        break;
+
+                    case BladeMode.BladeContent:
+
+                        var lastActiveBlade = Blades.Where(x => x.IsBladeActive).LastOrDefault();
+
+                        if (lastActiveBlade == null)
+                        {
+                            return;
+                        }
+
+                        lastActiveBlade.Width = double.NaN;
+                        lastActiveBlade.HorizontalAlignment = HorizontalAlignment.Stretch;
+                        lastActiveBlade.VerticalAlignment = VerticalAlignment.Stretch;
+
+                        Content = lastActiveBlade;
+
+                        break;
+
+                }
 
             }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                isBusy = false;
+            }
+
+
 
         }
 
 
-        private void FocusLastBlade()
+        public void FocusLastBlade()
         {
 
-            if ((scrollViewer == null) || (scrollViewer.Parent == null))
+            if ((ScrollViewer == null) || (ScrollViewer.Parent == null))
             {
                 return;
             }
 
             if (Windows.ApplicationModel.DesignMode.DesignModeEnabled)
             {
-                scrollViewer.ChangeView(scrollViewer.ScrollableWidth, null, null);
+                ScrollViewer.ChangeView(ScrollViewer.ScrollableWidth, null, null);
             }
             else
             {
-                Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { scrollViewer.ChangeView(scrollViewer.ScrollableWidth, null, null); });
+                Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => { ScrollViewer.ChangeView(ScrollViewer.ScrollableWidth, null, null); });
             }
 
 
@@ -262,5 +356,10 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
 
     }
 
+    public enum BladeStackChangeType
+    {
+        Manual,
+        BladeStackMinWidth
+    }
 
 }
