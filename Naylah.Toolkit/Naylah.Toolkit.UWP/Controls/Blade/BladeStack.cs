@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using WinRTXamlToolkit.Tools;
 
 namespace Naylah.Toolkit.UWP.Controls.Blade
@@ -163,6 +164,7 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
 
         private void BladeStack_SizeChanged(object sender, SizeChangedEventArgs e)
         {
+
             FocusLastBlade();
 
             if (BladeStackChangeType == BladeStackChangeType.Manual)
@@ -231,8 +233,10 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
 
             ScrollViewer.HorizontalAlignment = HorizontalAlignment.Stretch;
             ScrollViewer.VerticalAlignment = VerticalAlignment.Stretch;
+
             ScrollViewer.HorizontalScrollMode = ScrollMode.Enabled;
             ScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+
             ScrollViewer.VerticalScrollMode = ScrollMode.Disabled;
             ScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
 
@@ -279,6 +283,11 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
 
                                 x.Width = x.BladeWidth;
 
+                                x.SetBinding(HeightProperty, new Binding() {Path = new PropertyPath("ActualHeight"), Source = this });
+                                //x.Height = StackPanel.Height;
+
+                                //x.VerticalAlignment = VerticalAlignment.Stretch;
+
                                 StackPanel.Children.Add(x);
                             }
                             );
@@ -300,6 +309,8 @@ namespace Naylah.Toolkit.UWP.Controls.Blade
                         }
 
                         lastActiveBlade.Width = double.NaN;
+                        lastActiveBlade.Height = double.NaN;
+
                         lastActiveBlade.HorizontalAlignment = HorizontalAlignment.Stretch;
                         lastActiveBlade.VerticalAlignment = VerticalAlignment.Stretch;
 
