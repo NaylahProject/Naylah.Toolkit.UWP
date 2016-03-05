@@ -162,6 +162,10 @@
     <Compile Include="Helpers\NetworkHelper.cs" />
     <Compile Include="Helpers\XamlHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Communication\MessageOptions.cs" />
+    <Compile Include="Services\Communication\NDialogService.cs" />
+    <Compile Include="Services\Communication\WindowsDialogService.cs" />
+    <Compile Include="Services\Communication\WindowsNotificationsService.cs" />
     <EmbeddedResource Include="Properties\Naylah.Toolkit.UWP.rd.xml" />
   </ItemGroup>
   <ItemGroup>

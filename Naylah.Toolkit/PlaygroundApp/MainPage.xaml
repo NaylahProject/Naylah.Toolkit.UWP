@@ -119,6 +119,28 @@
                 >
 
                 </blades:ImageChooserBlade>
+
+                <bladeControls:Blade
+                    Background="Gray"
+                    IsBladeActive="{Binding DialogServiceJourney}"
+                    BladeWidth="600"
+                    >
+
+                    <Grid>
+
+                        <Button
+                            x:Name="btShowDialog"
+                            Content="Show Dialog"
+                            Click="btShowDialog_Click"
+                            >
+                            
+                        </Button>
+                        
+                       
+                        
+                    </Grid>
+                    
+                </bladeControls:Blade>
                 
             </bladeControls:BladeStack.Blades>
 

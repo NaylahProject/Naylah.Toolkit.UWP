@@ -49,6 +49,11 @@ namespace PlaygroundApp
             Frame rootFrame = Window.Current.Content as Frame;
             rootFrame.Navigate(typeof(AnotherPage));
         }
+
+        private void btShowDialog_Click(object sender, RoutedEventArgs e)
+        {
+            Vm.ShowDialog("1");
+        }
     }
 
 }
