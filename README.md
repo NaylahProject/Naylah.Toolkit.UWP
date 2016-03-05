@@ -25,5 +25,5 @@ It is a control that easily provides a dynamic and customized interface for sele
 Inspired on Azure Blades, more info here [more info here](http://bit.ly/bladecontrolsforuwp)
 
 ![Showing/Hiding blades](http://i.imgur.com/RSVwysW.gif)
-![Resizing](http://i.imgur.com/RSVwysW.gif)
+![Resizing](http://i.imgur.com/KTt9vI4.gif)
 ![Mobile, smaller screen](http://i.imgur.com/MYNfSrO.gif)
