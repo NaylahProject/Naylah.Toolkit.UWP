@@ -10,8 +10,6 @@ Contain useful libraries, controls, helpers, architecture, etc. the intention is
 
 **You** are welcome to join the Naylah Community or make PRs. (Please do :smile:)
 
-
-
 ##UI Controls
 
 ###Image Chooser
@@ -21,9 +19,11 @@ It is a control that easily provides a dynamic and customized interface for sele
 ![Upload and Crop](http://imgur.com/mhmiwa0.gif)
 ![Aspect Ratio](http://i.imgur.com/PnyDD4o.gif)
 
+
 ###Blade controls (BladeStack and Blade)
 
 Inspired on Azure Blades, more info here [more info here](http://bit.ly/bladecontrolsforuwp)
+
 ![Showing/Hiding blades](http://i.imgur.com/RSVwysW.gif)
 ![Resizing](http://i.imgur.com/RSVwysW.gif)
 ![Mobile, smaller screen](http://i.imgur.com/MYNfSrO.gif)
