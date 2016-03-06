@@ -24,6 +24,7 @@ namespace Naylah.Toolkit.UWP.Services.Communication
             Title = title;
             Title = title;
             InteractionOptions = interactionOptions;
+            WindowsNotificationOptions = notificationOptions;
         }
 
         public string Title { get; set; }

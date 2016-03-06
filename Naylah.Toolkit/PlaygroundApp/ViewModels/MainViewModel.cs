@@ -42,7 +42,6 @@ namespace PlaygroundApp.ViewModels
             MenuItemsList.Add("Dialog Service");
 
             DialogService = new Naylah.Toolkit.UWP.Services.Communication.NaylahUWPDialogService();
-            DialogService.Approach = NDialogServiceApproach.MessageDialog;
             DialogService.Initialize();
 
 
@@ -70,15 +69,19 @@ namespace PlaygroundApp.ViewModels
 
         internal void ShowDialog(string v)
         {
-            var messageOptions = new MessageOptions("Clima", "Vai chover" ,"Vc vai sair com guarda-chuva?" );
-            messageOptions.WindowsNotificationOptions = new WindowsNotificationOptions();
-            messageOptions.WindowsNotificationOptions.ExpireAfter = 10;
-            messageOptions.WindowsNotificationOptions.Silent = true;
+            //var messageOptions = new MessageOptions("Clima", "Vai chover" ,"Vc vai sair com guarda-chuva?" );
+            //messageOptions.WindowsNotificationOptions = new WindowsNotificationOptions();
+            //messageOptions.WindowsNotificationOptions.ExpireAfter = 10;
+            //messageOptions.WindowsNotificationOptions.Silent = true;
             //messageOptions.Modal = true;
             //messageOptions.InteractionOptions = new InteractionOptions();
-            //messageOptions.InteractionOptions.Buttons.Add(new InteractionOptions.Button("Sim", "S"));
-            //messageOptions.InteractionOptions.Buttons.Add(new InteractionOptions.Button("Nao", "N"));
+            ////messageOptions.InteractionOptions.Buttons.Add(new InteractionOptions.Button("Sim", "S"));
+            ////messageOptions.InteractionOptions.Buttons.Add(new InteractionOptions.Button("Nao", "N"));
             //messageOptions.InteractionOptions.InteractionEvent = Obj;
+            //DialogService.ShowMessage(messageOptions);
+
+            var messageOptions = new MessageOptions("qdqwwd", "qdwqwd", null, false, null, new WindowsNotificationOptions() { ExpireAfter = 10 });
+
             DialogService.ShowMessage(messageOptions);
         }
 
