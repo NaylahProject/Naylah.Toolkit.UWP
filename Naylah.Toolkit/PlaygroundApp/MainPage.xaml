@@ -12,7 +12,7 @@
     xmlns:ImageChooser="using:Naylah.Toolkit.UWP.Controls.ImageChooser"
     xmlns:AppVersion="using:Naylah.Toolkit.UWP.Controls.AppVersion"
     
-    xmlns:behaviors="using:Naylah.Toolkit.UWP.Behaviors"
+    xmlns:naylahBehaviors="using:Naylah.Toolkit.UWP.Behaviors"
     
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     
@@ -21,6 +21,9 @@
     xmlns:blades="using:PlaygroundApp.Blades"
     
     >
+    <Page.Resources>
+    
+    </Page.Resources>
 
     <Grid
         x:Name="gdPageContent"
@@ -34,7 +37,7 @@
             <bladeControls:BladeStack.Blades>
 
                 <bladeControls:Blade
-                    IsBladeActive="True"
+                    IsBladeActive="true"
                     BladeWidth="300"
                     Background="SlateBlue"
                     >
@@ -61,7 +64,7 @@
                                     Width="130"
                                     Height="130"
                                     >
-                                    
+
                                 </Image>
 
                                 <TextBlock
@@ -72,9 +75,9 @@
                                     FontSize="24"
                                     IsTapEnabled="{Binding ImageChooserJourney}"
                                     >
-                                    
+
                                 </TextBlock>
-                                
+
                             </StackPanel>
                         </Grid>
 
@@ -102,16 +105,16 @@
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>
-                            
+
                         </Grid>
-                            
-                       
-                        
-                        
+
+
+
+
                     </Grid>
 
                 </bladeControls:Blade>
-                
+
                 <blades:ImageChooserBlade
                     Background="Gray"
                     IsBladeActive="{Binding ImageChooserJourney}"
@@ -135,18 +138,129 @@
                             >
                             
                         </Button>
-                        
-                       
-                        
-                    </Grid>
-                    
-                </bladeControls:Blade>
-                
-            </bladeControls:BladeStack.Blades>
 
-           
+
+
+
+
+                    </Grid>
+
+                </bladeControls:Blade>
+
+                <bladeControls:Blade
+                    Background="LightGray"
+                    IsBladeActive="{Binding BehaviorsJourney}"
+                    BladeWidth="600"
+                    >
+
+                    <Grid>
+
+
+                        <StackPanel
+                            Margin="20"
+                            >
+
+                            
+                            
+                            
+                            
+                            
+                            <TextBox
+                                Margin="0,0,0,16"
+                                >
+                                
+                                <interactivity:Interaction.Behaviors>
+                                    <naylahBehaviors:NumericTextBoxBehavior
+                                        x:Name="numericTextBoxBehavior"
+                                        Type="Double"
+                                        NumericValue="{Binding MyDouble, Mode=TwoWay}"
+                                        />
+                                </interactivity:Interaction.Behaviors>
+                                
+                            </TextBox>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Margin="0,0,0,10"
+                                >
+                                <TextBlock
+                                    Text="This is your props value:"
+                                    Margin="0,0,4,0"
+                                    >
+
+                                </TextBlock>
+                                <TextBlock
+                                    Text="{Binding MyDouble}"
+                                    >
+
+                                </TextBlock>
+                            </StackPanel>
+
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <Button
+                                    x:Name="btDouble"
+                                    Margin="0,0,4,0"
+                                    Click="btDouble_Click"
+                                    Content="Double Type"
+                                    >
+                                    
+                                </Button>
+                                <Button
+                                    x:Name="btInt"
+                                    Click="btInt_Click"
+                                    Content="Int Type"
+                                    >
+
+                                </Button>
+                            </StackPanel>
+
+                            <StackPanel
+                                Orientation="Horizontal">
+                                <Button
+                                    x:Name="btFormatDecimal"
+                                    Margin="0,0,4,0"
+                                    Click="btFormatDecimal_Click"
+                                    Content="Format Decimal"
+                                    >
+
+                                </Button>
+                                <Button
+                                    x:Name="btFormatCurrency"
+                                    Click="btFormatCurrency_Click"
+                                    Content="Format Currency"
+                                    >
+
+                                </Button>
+                                
+                            </StackPanel>
+
+
+                        </StackPanel>
+                     
+
+
+                    </Grid>
+
+                </bladeControls:Blade>
+
+            </bladeControls:BladeStack.Blades>
             
-           
+            
+
+
+
+
 
         </bladeControls:BladeStack>
 
@@ -156,8 +270,9 @@
             Margin="20"
             Content="Navigate To Another Page"
             Click="Button_Click">
-            
+
         </Button>
+
 
     </Grid>
 </Page>

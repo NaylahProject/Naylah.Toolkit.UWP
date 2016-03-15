@@ -3,11 +3,23 @@ using System.Collections.ObjectModel;
 using System;
 using System.Threading.Tasks;
 using Naylah.Toolkit.UWP.Services.Communication;
+using System.Globalization;
 
 namespace PlaygroundApp.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+
+        private double _myDouble;
+
+        public double MyDouble
+        {
+            get { return _myDouble; }
+            set { Set(ref _myDouble, value); }
+        }
+
+
+
 
         private MainJourneys _currentJourney;
 
@@ -18,14 +30,17 @@ namespace PlaygroundApp.ViewModels
             {
                 Set(ref _currentJourney, value);
                 RaisePropertyChanged(() => this.ImageChooserJourney);
+                RaisePropertyChanged(() => this.DialogServiceJourney);
+                RaisePropertyChanged(() => this.BehaviorsJourney);
             }
         }
 
 
-       
+
 
         public bool ImageChooserJourney { get { return CurrentJourney == MainJourneys.ImageChooser; } }
         public bool DialogServiceJourney { get { return CurrentJourney == MainJourneys.DialogService; } }
+        public bool BehaviorsJourney { get { return CurrentJourney == MainJourneys.Behaviors; } }
 
 
 
@@ -35,15 +50,19 @@ namespace PlaygroundApp.ViewModels
 
         public MainViewModel()
         {
-            CurrentJourney = MainJourneys.DialogService;
+            CurrentJourney = MainJourneys.Behaviors;
             MenuItemsList = new ObservableCollection<string>();
             MenuItemsList.Add("None");
             MenuItemsList.Add("Image Chooser");
             MenuItemsList.Add("Dialog Service");
+            MenuItemsList.Add("Behaviors");
 
             DialogService = new Naylah.Toolkit.UWP.Services.Communication.NaylahUWPDialogService();
             DialogService.Initialize();
 
+            MyDouble = 8.9;
+
+            //CultureInfo.CurrentCulture = new CultureInfo("pt-BR");
 
         }
 
@@ -61,34 +80,38 @@ namespace PlaygroundApp.ViewModels
                 }
                 else
                 {
-                    CurrentJourney = MainJourneys.None;
+                    if (v == "Behaviors")
+                    {
+                        CurrentJourney = MainJourneys.Behaviors;
+                    }
+                    else
+                    {
+                        CurrentJourney = MainJourneys.None;
+                    }
                 }
-                
+
             }
         }
 
         internal void ShowDialog(string v)
         {
-            //var messageOptions = new MessageOptions("Clima", "Vai chover" ,"Vc vai sair com guarda-chuva?" );
-            //messageOptions.WindowsNotificationOptions = new WindowsNotificationOptions();
-            //messageOptions.WindowsNotificationOptions.ExpireAfter = 10;
-            //messageOptions.WindowsNotificationOptions.Silent = true;
-            //messageOptions.Modal = true;
-            //messageOptions.InteractionOptions = new InteractionOptions();
-            ////messageOptions.InteractionOptions.Buttons.Add(new InteractionOptions.Button("Sim", "S"));
-            ////messageOptions.InteractionOptions.Buttons.Add(new InteractionOptions.Button("Nao", "N"));
-            //messageOptions.InteractionOptions.InteractionEvent = Obj;
-            //DialogService.ShowMessage(messageOptions);
+            //var interaction = new InteractionOptions();
 
-            var messageOptions = new MessageOptions("qdqwwd", "qdwqwd", null, false, null, new WindowsNotificationOptions() { ExpireAfter = 10 });
+            //interaction.Buttons.Add(new InteractionOptions.Button("Sim", "s"));
+            //interaction.Buttons.Add(new InteractionOptions.Button("Nao", "n"));
+
+            //interaction.InteractionEvent += asdas;
+
+            var messageOptions = new MessageOptions("CultureInfo Infots", CultureInfo.CurrentCulture.DisplayName + Environment.NewLine + CultureInfo.CurrentUICulture.DisplayName, null, true, null, new WindowsNotificationOptions() { ExpireAfter = 10 });
 
             DialogService.ShowMessage(messageOptions);
         }
 
-        private void Obj(object obj)
+        private void asdas(object obj)
         {
-            
+
         }
+
     }
 
     public enum MainJourneys
@@ -96,5 +119,6 @@ namespace PlaygroundApp.ViewModels
         None,
         ImageChooser,
         DialogService,
+        Behaviors,
     }
 }

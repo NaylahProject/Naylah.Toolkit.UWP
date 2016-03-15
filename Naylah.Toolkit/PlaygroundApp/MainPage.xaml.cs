@@ -54,6 +54,26 @@ namespace PlaygroundApp
         {
             Vm.ShowDialog("1");
         }
+
+        private void btDouble_Click(object sender, RoutedEventArgs e)
+        {
+            numericTextBoxBehavior.Type = NumericTextBoxBehavior.NumericTextBoxBehaviorType.Double;
+        }
+
+        private void btInt_Click(object sender, RoutedEventArgs e)
+        {
+            numericTextBoxBehavior.Type = NumericTextBoxBehavior.NumericTextBoxBehaviorType.Integer;
+        }
+
+        private void btFormatDecimal_Click(object sender, RoutedEventArgs e)
+        {
+            numericTextBoxBehavior.NumericFormat = "";
+        }
+
+        private void btFormatCurrency_Click(object sender, RoutedEventArgs e)
+        {
+            numericTextBoxBehavior.NumericFormat = "C";
+        }
     }
 
 }

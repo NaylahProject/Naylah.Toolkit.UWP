@@ -147,7 +147,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Naylah.Toolkit.UWP\NaylahToolkitUWP.csproj">
       <Project>{851b3524-57f8-44ff-a53b-83d37a0e0643}</Project>
-      <Name>Naylah.Toolkit.UWP</Name>
+      <Name>NaylahToolkitUWP</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
