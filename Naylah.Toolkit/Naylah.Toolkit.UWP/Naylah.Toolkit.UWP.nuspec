@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Naylah.Toolkit.UWP</id>
+        <version>1.0.2.6</version>
+        <title>Naylah Toolkit for Universal Windows Plataform</title>
+        <authors>Infinitus Solutions,Breno</authors>
+        <projectUrl>https://github.com/NaylahProject/Naylah.Toolkit.UWP</projectUrl>
+        <iconUrl>https://raw.githubusercontent.com/NaylahProject/Naylah.Toolkit.UWP/master/NaylahLogo.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <developmentDependency>true</developmentDependency>
+        <description>Naylah is a Universal App Toolkit, Lib, Module, etc.</description>
+        <language>en-US</language>
+        <tags>Naylah, Toolkit, Universal Apps, UWP, C#, Xaml,</tags>
+        <dependencies>
+            <dependency id="WinRTXamlToolkit.UWP" version="1.9.4" />
+            <dependency id="Microsoft.Xaml.Behaviors.Uwp.Managed" version="1.0.3" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\Naylah.Toolkit.UWP\Controls\AppVersion\AppVersionShellFrame.xaml" target="lib\uap10.0\Naylah.Toolkit.UWP\Controls\AppVersion\AppVersionShellFrame.xaml" />
+        <file src="bin\Release\Naylah.Toolkit.UWP\Controls\ImageChooser\ImageChooser.xaml" target="lib\uap10.0\Naylah.Toolkit.UWP\Controls\ImageChooser\ImageChooser.xaml" />
+        <file src="bin\Release\Naylah.Toolkit.UWP\Controls\ImageCropper\ImageCropper.xaml" target="lib\uap10.0\Naylah.Toolkit.UWP\Controls\ImageCropper\ImageCropper.xaml" />
+        <file src="bin\Release\Naylah.Toolkit.UWP\Controls\SideBar\SideBar.xaml" target="lib\uap10.0\Naylah.Toolkit.UWP\Controls\SideBar\SideBar.xaml" />
+        <file src="bin\Release\Naylah.Toolkit.UWP\Controls\Style\CharactersFontPicker.xaml" target="lib\uap10.0\Naylah.Toolkit.UWP\Controls\Style\CharactersFontPicker.xaml" />
+        <file src="bin\Release\Naylah.Toolkit.UWP\Controls\Style\ColorsPicker.xaml" target="lib\uap10.0\Naylah.Toolkit.UWP\Controls\Style\ColorsPicker.xaml" />
+        <file src="bin\Release\Naylah.Toolkit.UWP\Themes\Generic.xaml" target="lib\uap10.0\Naylah.Toolkit.UWP\Themes\Generic.xaml" />
+        <file src="bin\Release\Naylah.Toolkit.UWP\Naylah.Toolkit.UWP.xr.xml" target="lib\uap10.0\Naylah.Toolkit.UWP\Naylah.Toolkit.UWP.xr.xml" />
+        <file src="bin\Release\Naylah.Toolkit.UWP.dll" target="lib\uap10.0\Naylah.Toolkit.UWP.dll" />
+        <file src="bin\Release\Naylah.Toolkit.UWP.pri" target="lib\uap10.0\Naylah.Toolkit.UWP.pri" />
+    </files>
+</package>
