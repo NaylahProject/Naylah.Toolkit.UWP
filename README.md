@@ -1,10 +1,14 @@
-# Naylah Toolkit for Universal Windows Plataform (UWP)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/NaylahProject/Naylah.Toolkit.UWP/master/NaylahLogo.png" width="226">
+  <br>
+  
+</p>
+
+<p align="center">Naylah Toolkit UWP it's a SDK for Universal Windows Plataform</p>
 
 
-[![NuGet](https://img.shields.io/nuget/dt/Naylah.Toolkit.UWP.svg?style=flat-square)](https://www.nuget.org/packages/Naylah.Toolkit.UWP/)
-[![Build status](https://ci.appveyor.com/api/projects/status/6ts40ompha6n13a1?svg=true&failingText=oh no)](https://ci.appveyor.com/project/daemun/naylah-uwp)
-
-Naylah UWP it's a SDK for Universal Windows Plataform. 
+[![NuGet](https://img.shields.io/nuget/v/Naylah.Toolkit.UWP.svg?style=flat-square)](https://www.nuget.org/packages/Naylah.Toolkit.UWP/)
+[![TFSBuild](https://softincloud.visualstudio.com/DefaultCollection/_apis/public/build/definitions/5b360ddf-7ff3-4c1d-93f6-2e82ed850c7e/43/badge)](https://softincloud.visualstudio.com/DefaultCollection/Naylah%20Services)
 
 Contain useful libraries, controls, helpers, architecture, etc. the intention is to create a community of developers who contribute to standardization of user interfaces, model and data flow.
 
