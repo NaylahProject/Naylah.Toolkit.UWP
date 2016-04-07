@@ -162,6 +162,11 @@ namespace Naylah.Toolkit.UWP.Behaviors
                 }
             }
 
+            if (e.Key == VirtualKey.Tab)
+            {
+                e.Handled = false;
+            }
+
         }
 
         private void AddNumberStack(int num)
