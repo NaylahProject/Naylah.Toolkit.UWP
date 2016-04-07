@@ -145,8 +145,6 @@ namespace Naylah.Toolkit.UWP.Behaviors
                 return;
             }
 
-            e.Handled = true;
-
             var num = GetDigitBykey(e.Key);
 
             if (num != null)
@@ -162,10 +160,7 @@ namespace Naylah.Toolkit.UWP.Behaviors
                 }
             }
 
-            if (e.Key == VirtualKey.Tab)
-            {
-                e.Handled = false;
-            }
+            e.Handled = !(e.Key == VirtualKey.Tab);
 
         }
 
