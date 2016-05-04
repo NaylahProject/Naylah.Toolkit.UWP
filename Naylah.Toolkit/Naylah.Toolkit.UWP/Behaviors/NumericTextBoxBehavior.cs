@@ -55,19 +55,8 @@ namespace Naylah.Toolkit.UWP.Behaviors
         {
             try
             {
-
-
                 AssociatedObjectAsTextBox.Text = text;
                 AssociatedObjectAsTextBox.SelectionStart = AssociatedObjectAsTextBox.Text.Length;
-
-                //Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                //{
-
-                //    AssociatedObjectAsTextBox.Text = text;
-
-                //    AssociatedObjectAsTextBox.SelectionStart = AssociatedObjectAsTextBox.Text.Length;
-
-                //});
             }
             catch (Exception)
             {

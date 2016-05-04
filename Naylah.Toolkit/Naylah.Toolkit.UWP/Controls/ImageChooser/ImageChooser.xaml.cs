@@ -585,7 +585,7 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
 
                 CroppedImage = null;
 
-                var cropFile = await SelectedImage.Copy().SaveToFile(ImageChooserTempFolder);
+                var cropFile = await SelectedImage.Copy().SaveAsync(ImageChooserTempFolder);
 
                 CroppedImage = new BitmapImage(new Uri(cropFile.Path));
                 
@@ -631,13 +631,11 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
                     return;
                 }
 
-                
-
                 StorageFile saveImageFile = await DefaultFileSavePicker.PickSaveFileAsync();
 
                 if (saveImageFile != null)
                 {
-                    var file = await SelectedImage.SaveToFile(ImageChooserTempFolder, saveImageFile.Name, CreationCollisionOption.ReplaceExisting);
+                    var file = await SelectedImage.SaveAsync(ImageChooserTempFolder, saveImageFile.Name, CreationCollisionOption.ReplaceExisting);
                     await file.CopyAndReplaceAsync(saveImageFile);
                 }
                 
@@ -694,7 +692,7 @@ namespace Naylah.Toolkit.UWP.Controls.ImageChooser
 
         public async Task<StorageFile> GetSelectedImageAsStorageFile()
         {
-            return await SelectedImage.Copy().SaveToFile(ImageChooserTempFolder, Guid.NewGuid().ToString() + ".png", CreationCollisionOption.ReplaceExisting);
+            return await SelectedImage.Copy().SaveAsync(ImageChooserTempFolder, Guid.NewGuid().ToString() + ".png", CreationCollisionOption.ReplaceExisting);
         }
 
 
