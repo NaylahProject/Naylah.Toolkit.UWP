@@ -1,27 +1,48 @@
 ﻿using GalaSoft.MvvmLight;
-using System.Collections.ObjectModel;
-using System;
-using System.Threading.Tasks;
 using Naylah.Toolkit.UWP.Services.Communication;
+using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace PlaygroundApp.ViewModels
 {
+    public enum MainJourneys
+    {
+        None,
+        ImageChooser,
+        DialogService,
+        Behaviors,
+    }
+
     public class MainViewModel : ViewModelBase
     {
-
         private double _myDouble;
+
+        private MainJourneys _currentJourney;
+
+        public MainViewModel()
+        {
+            CurrentJourney = MainJourneys.Behaviors;
+            MenuItemsList = new ObservableCollection<string>();
+            MenuItemsList.Add("None");
+            MenuItemsList.Add("Image Chooser");
+            MenuItemsList.Add("Dialog Service");
+            MenuItemsList.Add("Behaviors");
+
+            DialogService = new Naylah.Toolkit.UWP.Services.Communication.NaylahUWPDialogService();
+            DialogService.Initialize();
+
+            MyDouble = 8.9;
+
+            //CultureInfo.CurrentCulture = new CultureInfo("pt-BR");
+        }
 
         public double MyDouble
         {
             get { return _myDouble; }
             set { Set(ref _myDouble, value); }
         }
-
-
-
-
-        private MainJourneys _currentJourney;
 
         public MainJourneys CurrentJourney
         {
@@ -48,24 +69,6 @@ namespace PlaygroundApp.ViewModels
 
         public NaylahUWPDialogService DialogService { get; private set; }
 
-        public MainViewModel()
-        {
-            CurrentJourney = MainJourneys.Behaviors;
-            MenuItemsList = new ObservableCollection<string>();
-            MenuItemsList.Add("None");
-            MenuItemsList.Add("Image Chooser");
-            MenuItemsList.Add("Dialog Service");
-            MenuItemsList.Add("Behaviors");
-
-            DialogService = new Naylah.Toolkit.UWP.Services.Communication.NaylahUWPDialogService();
-            DialogService.Initialize();
-
-            MyDouble = 8.9;
-
-            //CultureInfo.CurrentCulture = new CultureInfo("pt-BR");
-
-        }
-
         public async Task SetJourney(string v)
         {
             if (v == "Image Chooser")
@@ -89,7 +92,6 @@ namespace PlaygroundApp.ViewModels
                         CurrentJourney = MainJourneys.None;
                     }
                 }
-
             }
         }
 
@@ -102,23 +104,13 @@ namespace PlaygroundApp.ViewModels
 
             //interaction.InteractionEvent += asdas;
 
-            var messageOptions = new MessageOptions("CultureInfo Infots", CultureInfo.CurrentCulture.DisplayName + Environment.NewLine + CultureInfo.CurrentUICulture.DisplayName, null, true, null, new WindowsNotificationOptions() { ExpireAfter = 10 });
+            var messageOptions = new MessageOptions("CultureInfo Infots", CultureInfo.CurrentCulture.DisplayName + Environment.NewLine + CultureInfo.CurrentUICulture.DisplayName, null, false, null, new WindowsNotificationOptions() { ExpireAfter = 10 });
 
             DialogService.ShowMessage(messageOptions);
         }
 
         private void asdas(object obj)
         {
-
         }
-
-    }
-
-    public enum MainJourneys
-    {
-        None,
-        ImageChooser,
-        DialogService,
-        Behaviors,
     }
 }

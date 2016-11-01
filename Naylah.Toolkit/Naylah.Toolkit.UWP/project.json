@@ -1,8 +1,8 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.1.0",
-    "Microsoft.Xaml.Behaviors.Uwp.Managed": "1.1.0",
-    "NotificationsExtensions.Win10": "14295.0.1",
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+    "Microsoft.Xaml.Behaviors.Uwp.Managed": "2.0.0",
+    "NotificationsExtensions.Win10": "14332.0.2",
     "WinRTXamlToolkit.UWP": "2.0.0"
   },
   "frameworks": {
